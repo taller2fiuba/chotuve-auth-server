@@ -5,7 +5,7 @@
 # - Esperar a que el servidor se estabilice
 
 # Se va considerar que el servidor de desarrollo está online cuando esta URL de 200 OK
-DEV_SERVER_URL="http://localhost:5000"
+DEV_SERVER_URL="http://localhost:26080"
 
 # Tiempo para esperar al próximo reintento, en segundos
 RETRY_TIME=1
