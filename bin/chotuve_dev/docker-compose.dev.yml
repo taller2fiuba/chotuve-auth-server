@@ -1,6 +1,7 @@
 version: '3'
 services:
     chotuve_auth:
+        network_mode: host
         image: python:3.8
         volumes:
             - ../..:/var/www/app
@@ -11,8 +12,9 @@ services:
             STATIC_PATH: "/var/www/app/app/static"
             FLASK_APP: "app"
             FLASK_ENV: "development"
+            FLASK_RUN_PORT: 26080
 
-            DATABASE_URL: "postgres://chotuve_auth:chotuve_auth@chotuve_auth_db/chotuve_auth"
+            DATABASE_URL: "postgres://chotuve_auth:chotuve_auth@localhost:26032/chotuve_auth"
            
             # Avoid Python cache in src directory
             # [Python <3.8] PYTHONDONTWRITEBYTECODE: 1
@@ -34,16 +36,14 @@ services:
             
         working_dir: /var/www/app
         command: bash /var/www/app/bin/chotuve_dev/start.sh
-        ports:
-            - 0.0.0.0:5000:5000
-        links:
-            - chotuve_auth_db
     chotuve_auth_db:
         image: postgres
         environment:
             POSTGRES_DB: chotuve_auth
             POSTGRES_USER: chotuve_auth
             POSTGRES_PASSWORD: chotuve_auth
+        ports:
+            - 26032:5432
         volumes:
             - chotuve_auth_db_data:/var/lib/postgresql/data
 volumes:
