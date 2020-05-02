@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Atajo para ejecutar dentro del container del server de dev
+# 1) Verificar que se cumplan las reglas de codificación con pylint
+# 2) Correr test unitarios
+# 3) Crear archivo reporte de codigo cubierto por las pruebas con coverage
+
+exec $(dirname "$0")/exec-dev 'pylint --load-plugins pylint_flask src && coverage run -m nose2 -v && coverage report -m'

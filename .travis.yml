@@ -1,0 +1,31 @@
+language: python
+python:
+  - 3.8
+services:
+    - docker
+notifications:
+    email:
+        if: branch = master
+        recipients:
+            - franco.liberali@gmail.com
+            - ejusto@fi.uba.ar
+            - meiglesias@fi.uba.ar
+            - lsportelli@fi.uba.ar
+install:
+    - echo 'Not running pip since this is a Docker build'
+before_script:
+    - '$TRAVIS_BUILD_DIR/bin/travis/start-test-server'
+script:
+    - '$TRAVIS_BUILD_DIR/bin/travis/run-unit-tests'
+    - '$TRAVIS_BUILD_DIR/bin/travis/run-acceptance-tests-on-master-or-pr'
+after_success:
+    - '$TRAVIS_BUILD_DIR/bin/travis/run-coveralls-on-master-or-pr'
+after_script:
+    - '$TRAVIS_BUILD_DIR/bin/travis/stop-test-server'
+deploy:
+    provider: script
+    script:
+        $TRAVIS_BUILD_DIR/bin/travis/deploy-to-heroku
+    on:
+        branch: master
+    

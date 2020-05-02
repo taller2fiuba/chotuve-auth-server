@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Este script va a asumir que las siguientes condiciones se cumplen
+# - El servidor de desarrollo de Chotuve App está corriendo en http://localhost:5000/
+
+# Este script va a 
+# - Clonar el repositorio chotuve-integration-tests
+# - Correr las pruebas de aceptación
+
+if [ "$TRAVIS_BRANCH" != "master" ] && [ "$TRAVIS_PULL_REQUEST" != "true" ]; then
+    echo 'Se ignoran las pruebas de aceptación ya que no es un pull request o el branch master'
+    exit 0
+fi
+
+CHOTUVE_INTEGRATION_TESTS_REPO="https://github.com/taller2fiuba/chotuve-integration-tests.git"
+
+git clone "$CHOTUVE_INTEGRATION_TESTS_REPO"
+
+cd chotuve-integration-tests
+exec ./run-acceptance-tests.sh --chotuve-auth-repo="$TRAVIS_BUILD_DIR"

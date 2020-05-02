@@ -1,0 +1,2 @@
+- Los archivos de tests deben llamarse `test_<nombre>.py` para que `nose2` los ubique.
+- Los nombres de los tests (funciones o métodos) deben iniciar también con el prefijo `test_`.

@@ -1,0 +1,24 @@
+version: '3'
+services:
+    chotuve_auth:
+        build: .
+        environment:
+            # Flask
+            STATIC_URL: "/static"
+            STATIC_PATH: "/var/www/app/app/static"
+            DATABASE_URL: "postgres://chotuve_auth:chotuve_auth@chotuve_auth_db/chotuve_auth"
+            PORT: 5000 
+        ports:
+            - ${CHOTUVE_AUTH_PORT:-5001}:5000
+        links:
+            - chotuve_auth_db
+    chotuve_auth_db:
+        image: postgres
+        environment:
+            POSTGRES_DB: chotuve_auth
+            POSTGRES_USER: chotuve_auth
+            POSTGRES_PASSWORD: chotuve_auth
+        volumes:
+            - chotuve_auth_db:/var/lib/postgresql/data
+volumes:
+    chotuve_auth_db:

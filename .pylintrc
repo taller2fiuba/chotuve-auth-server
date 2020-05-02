@@ -1,0 +1,8 @@
+[MASTER]
+disable=
+    C0114, # missing-module-docstring
+    C0115, # Missing class docstring
+    C0116, # Missing function or method docstring
+    W0511, # allow TODO's
+    R0201, # Method could be a function
+ignore=migrations,models.py

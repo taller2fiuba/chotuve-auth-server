@@ -1,0 +1,6 @@
+#!/bin/bash
+
+DEVCOMPOSE=$TRAVIS_BUILD_DIR/bin/dev-compose
+
+echo 'Stopping development server'
+$DEVCOMPOSE down

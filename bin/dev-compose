@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# Atajo para ejecutar docker-compose para el server de dev
+
+docker-compose -f $(dirname "$0")/chotuve_dev/docker-compose.dev.yml "$@"

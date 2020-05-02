@@ -1,0 +1,6 @@
+[run]
+branch = True
+source = ./src/app
+omit =
+    ./src/app/wsgi.py
+    ./src/app/tests/*.py

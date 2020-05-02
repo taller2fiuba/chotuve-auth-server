@@ -1,0 +1,51 @@
+version: '3'
+services:
+    chotuve_auth:
+        image: python:3.8
+        volumes:
+            - ../..:/var/www/app
+            - chotuve_auth_cache:/root
+        environment:
+            # Flask
+            STATIC_URL: "/static"
+            STATIC_PATH: "/var/www/app/app/static"
+            FLASK_APP: "app"
+            FLASK_ENV: "development"
+
+            DATABASE_URL: "postgres://chotuve_auth:chotuve_auth@chotuve_auth_db/chotuve_auth"
+           
+            # Avoid Python cache in src directory
+            # [Python <3.8] PYTHONDONTWRITEBYTECODE: 1
+            PYTHONPYCACHEPREFIX: "/tmp/app"
+
+            # Travis CI / Coveralls
+            CI: ${CI:-}
+            COVERALLS_REPO_TOKEN: ${COVERALLS_REPO_TOKEN:-}
+            TRAVIS: ${TRAVIS:-}
+            TRAVIS_BRANCH: ${TRAVIS_BRANCH:-}
+            TRAVIS_COMMIT: ${TRAVIS_COMMIT:-}
+            TRAVIS_JOB_ID: ${TRAVIS_JOB_ID:-}
+            TRAVIS_JOB_NUMBER: ${TRAVIS_JOB_NUMBER:-}
+            TRAVIS_OS_NAME: ${TRAVIS_OS_NAME:-}
+            TRAVIS_PULL_REQUEST: ${TRAVIS_PULL_REQUEST:-}
+            TRAVIS_PULL_REQUEST_SHA: ${TRAVIS_PULL_REQUEST_SHA:-}
+            TRAVIS_REPO_SLUG: ${TRAVIS_REPO_SLUG:-}
+            TRAVIS_TAG: ${TRAVIS_TAG:-}
+            
+        working_dir: /var/www/app
+        command: bash /var/www/app/bin/chotuve_dev/start.sh
+        ports:
+            - 0.0.0.0:5000:5000
+        links:
+            - chotuve_auth_db
+    chotuve_auth_db:
+        image: postgres
+        environment:
+            POSTGRES_DB: chotuve_auth
+            POSTGRES_USER: chotuve_auth
+            POSTGRES_PASSWORD: chotuve_auth
+        volumes:
+            - chotuve_auth_db_data:/var/lib/postgresql/data
+volumes:
+    chotuve_auth_db_data:
+    chotuve_auth_cache:

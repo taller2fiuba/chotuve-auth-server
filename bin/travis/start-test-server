@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Este script va a
+# - Iniciar el servidor de desarrollo de Flask usando docker-compose (dev-compose)
+# - Esperar a que el servidor se estabilice
+
+# Se va considerar que el servidor de desarrollo está online cuando esta URL de 200 OK
+DEV_SERVER_URL="http://localhost:5000"
+
+# Tiempo para esperar al próximo reintento, en segundos
+RETRY_TIME=1
+
+DEVCOMPOSE=$TRAVIS_BUILD_DIR/bin/dev-compose
+
+$DEVCOMPOSE up -d --build
+
+until curl -o /dev/null -s --connect-timeout 1 $DEV_SERVER_URL; 
+do 
+    echo "Esperando $RETRY_TIME seg(s) a que el servidor de Flask se inicie"; 
+    sleep $RETRY_TIME; 
+done;
+
+echo "Servidor de desarrollo iniciado en $DEV_SERVER_URL"

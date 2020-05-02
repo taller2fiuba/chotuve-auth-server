@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ "$TRAVIS_BRANCH" != "master" ] && [ "$TRAVIS_PULL_REQUEST" != "true" ]; then
+    exit 0
+fi
+
+
+exec $TRAVIS_BUILD_DIR/bin/coveralls

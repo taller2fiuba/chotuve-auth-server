@@ -1,0 +1,6 @@
+#!/bin/bash
+
+RUNUNITTESTS=$TRAVIS_BUILD_DIR/bin/run-unit-tests
+
+echo 'Corriendo pruebas unitarias'
+exec $RUNUNITTESTS
