@@ -7,11 +7,16 @@ services:
             STATIC_URL: "/static"
             STATIC_PATH: "/var/www/app/app/static"
             DATABASE_URL: "postgres://chotuve_auth:chotuve_auth@chotuve_auth_db/chotuve_auth"
-            PORT: 5000 
+            PORT: 26080
+            CHOTUVE_APP_URL: ${CHOTUVE_APP_URL:-http://chotuve_app:28080}
+            CHOTUVE_MEDIA_URL: ${CHOTUVE_MEDIA_URL:-http://chotuve_media:27080}
         ports:
-            - ${CHOTUVE_AUTH_PORT:-5001}:5000
+            - ${CHOTUVE_AUTH_PORT:-26080}:26080
         links:
             - chotuve_auth_db
+        networks:
+            - default
+            - chotuve
     chotuve_auth_db:
         image: postgres
         environment:
@@ -22,3 +27,6 @@ services:
             - chotuve_auth_db:/var/lib/postgresql/data
 volumes:
     chotuve_auth_db:
+networks:
+    chotuve:
+        external: true

@@ -60,11 +60,23 @@ Con eso el contenedor está corriendo y el sitio es accesible desde localhost:50
 
 ### Para desplegar el servidor de Flask y una base de datos PostgreSQL
 Se provee un archivo `docker-compose.yml` para despliegue a través de Docker Compose. Este archivo levantará el servicio de Flask utilizando el Dockerfile mencionado anteriormente y un contenedor con una base de datos PostgreSQL. Se creará también un volumen para la persistencia de los datos de la base.
+Se asumirá la existencia de una red de Docker de tipo `bridge` llamada `chotuve`. Esta red debe ser creada antes de levantar
+el contendor con el siguiente comando:
+
+```bash
+$ docker network create -d bridge chotuve
+```
+
+Y luego levantar el servicio de la siguiente forma:
 
 ```bash
 $ docker-compose build
 $ docker-compose up -d
 ```
+
+Esta red de Docker sólo se utiliza para cuando se levantan más de un servicio en la misma máquina. Si la máquina sólo va a
+tener el Auth server puede modificarse el `docker-compose.yml` eliminando esta red.
+
 
 # Notas
 
