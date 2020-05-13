@@ -30,3 +30,12 @@ class UsuarioResource(Resource):
         else:
             # TODO mejorar esto, los errores no van asi, mirar en media server
             return {'mensaje': 'El mail ya se encuentra registrado'}, 400
+
+    def get(self):
+        # TODO UsuarioRepositorio
+        usuario = Usuario.query.filter_by(id=usuario_id).first()
+        if usuario:
+            return {'email': usuario.email}, 200
+        else:
+            # Usuario no existe
+            return {}, 404
