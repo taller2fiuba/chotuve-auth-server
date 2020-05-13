@@ -5,14 +5,14 @@ import datetime
 # TODO sacar la logica bcrypt, poner en un servicio
 from app import app, db, bcrypt
 
-class User(db.Model):
+class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String(255), unique=True, nullable=False, index=True)
     password = db.Column(db.String(255), nullable=False)
     registro_fecha_hora = db.Column(db.DateTime, nullable=False)
 
     def __repr__(self):
-        return f'<User {self.email}>'
+        return f'<Usuario {self.email}>'
 
     def __init__(self, email, password):
         self.email = email
@@ -42,12 +42,12 @@ class User(db.Model):
             return e
 
     @staticmethod
-    def decode_auth_token(auth_token):
+    def validar_auth_token(auth_token):
         "Valida un auth token y devuelve el id de usuario que fue puesto dentro de él"
         try:
             payload = jwt.decode(auth_token, app.config.get('AUTH_TOKEN_KEY'))
             return payload['sub']
-        # TODO mejorar estos errores
+        # TODO mejorar estos errores, en lugar de devolver strings devolver excepciones propias
         except jwt.ExpiredSignatureError:
             return 'Signature expired. Please log in again.'
         except jwt.InvalidTokenError:
