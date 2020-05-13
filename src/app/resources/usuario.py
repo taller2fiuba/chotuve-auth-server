@@ -28,8 +28,7 @@ class UsuarioResource(Resource):
                 # TODO mejorar mensaje de error, no se bien porque es este error, quizas deberia ser un 500
                 return {'mensaje': 'Error'}, 400
         else:
-            # TODO mejorar esto, los errores no van asi, mirar en media server
-            return {'mensaje': 'El mail ya se encuentra registrado'}, 400
+            return {'errores': {'email': 'El mail ya se encuentra registrado'}}, 400
 
     def get(self):
         # TODO UsuarioRepositorio
