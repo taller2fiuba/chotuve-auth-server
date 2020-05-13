@@ -47,8 +47,3 @@ class Usuario(db.Model):
         try:
             payload = jwt.decode(auth_token, app.config.get('AUTH_TOKEN_KEY'))
             return payload['sub']
-        # TODO mejorar estos errores, en lugar de devolver strings devolver excepciones propias
-        except jwt.ExpiredSignatureError:
-            return 'Signature expired. Please log in again.'
-        except jwt.InvalidTokenError:
-            return 'Invalid token. Please log in again.'

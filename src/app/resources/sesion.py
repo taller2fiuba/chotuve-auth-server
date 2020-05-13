@@ -1,5 +1,6 @@
 from flask_restful import Resource
 from flask import request
+import jwt
 
 from app.models import Usuario
 
@@ -21,19 +22,21 @@ class SesionResource(Resource):
             return {'mensaje': 'Error'}, 500
 
     def get(self):
-        # obtener el auth_token
         auth_header = request.headers.get('Authorization')
         if auth_header:
+            # el auth_token esta despues Bearer
             auth_token = auth_header.split(" ")[1]
         else:
             auth_token = ''
         if auth_token:
-            # TODO resta cachear excepciones en caso de token invalido o caducado
-            # En ese caso devolver 403
-            usuario_id = Usuario.validar_auth_token(auth_token)
-            # TODO UsuarioRepositorio
-            usuario = Usuario.query.filter_by(id=usuario_id).first()
-            return {'usuario_id': usuario_id}, 200
+            try:
+                usuario_id = Usuario.validar_auth_token(auth_token)
+                # TODO UsuarioRepositorio
+                usuario = Usuario.query.filter_by(id=usuario_id).first()
+                return {'usuario_id': usuario_id}, 200
+            except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+                # token invalido o caducado
+                return {}, 403
         else:
             # no mandaste auth_token
             return {}, 401
