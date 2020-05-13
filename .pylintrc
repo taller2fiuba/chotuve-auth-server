@@ -5,4 +5,5 @@ disable=
     C0116, # Missing function or method docstring
     W0511, # allow TODO's
     R0201, # Method could be a function
-ignore=migrations,models.py
+ignore=migrations
+ignored-classes=SQLObject,Registrant,scoped_session,SQLAlchemy

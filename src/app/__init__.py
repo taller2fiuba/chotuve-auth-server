@@ -7,11 +7,9 @@ from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 from config import Config
 
-db = SQLAlchemy()
 app = Flask(__name__)
 app.config.from_object(Config)
-
-db.init_app(app)
+db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
 API = Api(app)

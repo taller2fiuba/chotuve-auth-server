@@ -1,6 +1,6 @@
+import datetime
 # TODO sacar la logica jwt, poner en un servicio
 import jwt
-import datetime
 
 # TODO sacar la logica bcrypt, poner en un servicio
 from app import app, db, bcrypt
@@ -23,23 +23,20 @@ class Usuario(db.Model):
         return bcrypt.check_password_hash(self.password, password)
 
     def generar_auth_token(self):
-        try:
-            # contenido encriptado del token jwt
-            payload = {
-                # expira dentro de un dia
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
-                # generado ahora
-                'iat': datetime.datetime.utcnow(),
-                # corresponde a este usuario
-                'sub': self.id
-            }
-            return jwt.encode(
-                payload,
-                app.config.get('AUTH_TOKEN_KEY'),
-                algorithm='HS256'
-            )
-        except Exception as e:
-            return e
+        # contenido encriptado del token jwt
+        payload = {
+            # expira dentro de un dia
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
+            # generado ahora
+            'iat': datetime.datetime.utcnow(),
+            # corresponde a este usuario
+            'sub': self.id
+        }
+        return jwt.encode(
+            payload,
+            app.config.get('AUTH_TOKEN_KEY'),
+            algorithm='HS256'
+        )
 
     @staticmethod
     def validar_auth_token(auth_token):

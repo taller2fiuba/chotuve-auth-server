@@ -2,6 +2,7 @@ from flask_restful import Resource
 from flask import request
 
 from app.models import Usuario
+from app import db
 
 class UsuarioResource(Resource):
     def post(self):
@@ -11,30 +12,25 @@ class UsuarioResource(Resource):
         # TODO UsuarioRepositorio
         usuario = Usuario.query.filter_by(email=post_data.get('email')).first()
         if not usuario:
-            try:
-                usuario = Usuario(
-                    email=post_data.get('email'),
-                    password=post_data.get('password')
-                )
+            usuario = Usuario(
+                email=post_data.get('email'),
+                password=post_data.get('password')
+            )
 
-                # Guardar el usuario
-                # TODO UsuarioRepositorio
-                db.session.add(usuario)
-                db.session.commit()
-                # generar el token de autenficacion
-                auth_token = usuario.generar_auth_token()
-                return {'auth_token': auth_token.decode()}, 201
-            except Exception as e:
-                # TODO mejorar mensaje de error, no se bien porque es este error, quizas deberia ser un 500
-                return {'mensaje': 'Error'}, 400
-        else:
-            return {'errores': {'email': 'El mail ya se encuentra registrado'}}, 400
+            # Guardar el usuario
+            # TODO UsuarioRepositorio
+            db.session.add(usuario)
+            db.session.commit()
+            # generar el token de autenficacion
+            auth_token = usuario.generar_auth_token()
+            return {'auth_token': auth_token.decode()}, 201
+        return {'errores': {'email': 'El mail ya se encuentra registrado'}}, 400
 
     def get(self):
+        usuario_id = request.args.get('usuario_id')
         # TODO UsuarioRepositorio
         usuario = Usuario.query.filter_by(id=usuario_id).first()
         if usuario:
             return {'email': usuario.email}, 200
-        else:
-            # Usuario no existe
-            return {}, 404
+        # Usuario no existe
+        return {}, 404
