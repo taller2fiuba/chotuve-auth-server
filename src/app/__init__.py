@@ -7,20 +7,20 @@ from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 from config import Config
 
-from .resources import PingResource, UsuarioResource, SesionResource
-
+db = SQLAlchemy()
 app = Flask(__name__)
 app.config.from_object(Config)
-db = SQLAlchemy(app)
+
+db.init_app(app)
 migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
 API = Api(app)
 
-API.add_resource(PingResource, '/ping')
-API.add_resource(UsuarioResource, '/usuario')
-API.add_resource(SesionResource, '/usuario/sesion')
+from .resources import ping, usuario, sesion
+
+API.add_resource(ping.PingResource, '/ping')
+API.add_resource(usuario.UsuarioResource, '/usuario')
+API.add_resource(sesion.SesionResource, '/usuario/sesion')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
-
-from app import models
