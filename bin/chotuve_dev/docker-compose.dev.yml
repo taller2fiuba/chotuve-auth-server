@@ -13,9 +13,10 @@ services:
             FLASK_APP: "app"
             FLASK_ENV: "development"
             FLASK_RUN_PORT: 26080
+            AUTH_TOKEN_KEY: ${AUTH_TOKEN_KEY:"AUTH_TOKEN_KEY"}
 
             DATABASE_URL: "postgres://chotuve_auth:chotuve_auth@localhost:26032/chotuve_auth"
-           
+
             # Avoid Python cache in src directory
             # [Python <3.8] PYTHONDONTWRITEBYTECODE: 1
             PYTHONPYCACHEPREFIX: "/tmp/app"
@@ -33,7 +34,7 @@ services:
             TRAVIS_PULL_REQUEST_SHA: ${TRAVIS_PULL_REQUEST_SHA:-}
             TRAVIS_REPO_SLUG: ${TRAVIS_REPO_SLUG:-}
             TRAVIS_TAG: ${TRAVIS_TAG:-}
-            
+
         working_dir: /var/www/app
         command: bash /var/www/app/bin/chotuve_dev/start.sh
     chotuve_auth_db:
