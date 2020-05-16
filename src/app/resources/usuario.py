@@ -27,6 +27,7 @@ class UsuarioResource(Resource):
         return {'errores': {'email': 'El mail ya se encuentra registrado'}}, 400
 
     def get(self):
+        # TODO esto es query string, pero deberia ser /usuario/id
         usuario_id = request.args.get('usuario_id')
         # TODO UsuarioRepositorio
         usuario = Usuario.query.filter_by(id=usuario_id).first()
