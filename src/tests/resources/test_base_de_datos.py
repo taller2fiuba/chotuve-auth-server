@@ -6,12 +6,7 @@ from tests.base import BaseTestCase
 
 class BaseDeDatosTestCase(BaseTestCase):
     def test_delete_base_de_datos_exitoso(self):
-        usuario = Usuario(
-            email='email',
-            password='password'
-        )
-        db.session.add(usuario)
-        db.session.commit()
+        self.crear_usuario('email', 'password')
         self.assertEqual(db.session.query(Usuario).count(), 1)
         response = self.app.delete('/base_de_datos')
         self.assertEqual(response.status_code, 200)
