@@ -2,7 +2,7 @@ from flask_restful import Resource
 from flask import request
 import jwt
 
-from app.models import Usuario
+from app.models.usuario import Usuario
 
 class SesionResource(Resource):
     def post(self):
