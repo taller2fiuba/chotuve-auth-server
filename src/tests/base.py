@@ -1,8 +1,8 @@
 import unittest
 
 from app import app, db
-from app.models.usuario import Usuario
 from config import Config
+import usuario_api
 
 class BaseTestCase(unittest.TestCase):
     def setUp(self):
@@ -17,11 +17,6 @@ class BaseTestCase(unittest.TestCase):
         db.drop_all()
 
     def crear_usuario(self, email, password):
-        usuario = Usuario(
-            email=email,
-            password=password
-        )
-        # TODO UsuarioRepositorio
-        db.session.add(usuario)
-        db.session.commit()
+        usuario = usuario_api.crear_usuario(email, password)
+        usuario_api.guardar_usuario(usuario)
         return usuario
