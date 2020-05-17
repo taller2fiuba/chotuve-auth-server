@@ -18,11 +18,12 @@ class SesionResource(Resource):
 
     def get(self):
         auth_header = request.headers.get('Authorization')
+        auth_token = ''
         if auth_header:
             # el auth_token esta despues Bearer
-            auth_token = auth_header.split(" ")[1]
-        else:
-            auth_token = ''
+            split = auth_header.split(" ")
+            if len(split) == 2 and split[0] == 'Bearer':
+                auth_token = split[1]
         if auth_token:
             try:
                 usuario_id = Usuario.validar_auth_token(auth_token)
