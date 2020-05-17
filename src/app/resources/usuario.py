@@ -4,7 +4,7 @@ from flask import request
 from app.models.usuario import Usuario
 from app import db
 
-class UsuarioResource(Resource):
+class UsuarioCrearResource(Resource):
     def post(self):
         post_data = request.get_json()
         # verificar que el no exista un usuario con el mismo email
@@ -26,9 +26,8 @@ class UsuarioResource(Resource):
             return {'auth_token': auth_token.decode()}, 201
         return {'errores': {'email': 'El mail ya se encuentra registrado'}}, 400
 
-    def get(self):
-        # TODO esto es query string, pero deberia ser /usuario/id
-        usuario_id = request.args.get('usuario_id')
+class UsuarioResource(Resource):
+    def get(self, usuario_id):
         # TODO UsuarioRepositorio
         usuario = Usuario.query.filter_by(id=usuario_id).first()
         if usuario:

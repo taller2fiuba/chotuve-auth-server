@@ -28,20 +28,20 @@ class SesionResourceTestCase(BaseTestCase):
     def test_validacion_de_token_exitoso(self):
         usuario = self.crear_usuario('test@test.com', '123456')
         response, data = self.iniciar_sesion_usuario()
-        response = self.app.get('/usuario/sesion',
-                                headers={'Authorization': f'Bearer {data["auth_token"]}'})
+        response, data = self.get('/usuario/sesion',
+                                  {'Authorization': f'Bearer {data["auth_token"]}'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(self.get_response_json(response)['usuario_id'], usuario.id)
+        self.assertEqual(data['usuario_id'], usuario.id)
 
     def test_validacion_de_token_fallido_token_invalido(self):
         token = 'token_invalido'
-        response = self.app.get('/usuario/sesion',
-                                headers={'Authorization': f'Bearer {token}'})
-        self.assertEqual(response.status_code, 403)
+        response = self.get('/usuario/sesion',
+                            {'Authorization': f'Bearer {token}'})
+        self.assertEqual(response[0].status_code, 403)
 
     def test_validacion_de_token_fallido_token_no_enviado(self):
-        response = self.app.get('/usuario/sesion')
-        self.assertEqual(response.status_code, 401)
+        response = self.get('/usuario/sesion')
+        self.assertEqual(response[0].status_code, 401)
 
     def iniciar_sesion_usuario(self):
         return self.post('/usuario/sesion',

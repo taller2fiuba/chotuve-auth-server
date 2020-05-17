@@ -23,6 +23,11 @@ class BaseTestCase(unittest.TestCase):
                                  content_type='application/json')
         return response, self.get_response_json(response)
 
+    def get(self, url, header=None):
+        response = self.app.get(url,
+                                headers=header)
+        return response, self.get_response_json(response)
+
     def get_response_json(self, response):
         return json.loads(response.data.decode())
 

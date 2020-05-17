@@ -17,7 +17,8 @@ API = Api(app)
 from .resources import ping, usuario, sesion, base_de_datos
 
 API.add_resource(ping.PingResource, '/ping')
-API.add_resource(usuario.UsuarioResource, '/usuario')
+API.add_resource(usuario.UsuarioCrearResource, '/usuario')
+API.add_resource(usuario.UsuarioResource, '/usuario/<int:usuario_id>')
 API.add_resource(sesion.SesionResource, '/usuario/sesion')
 API.add_resource(base_de_datos.BaseDeDatosResource, '/base_de_datos')
 
