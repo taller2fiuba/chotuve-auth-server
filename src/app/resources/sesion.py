@@ -31,5 +31,5 @@ class SesionResource(Resource):
             except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
                 # token invalido o caducado
                 return {}, 403
-        # no mandaste auth_token
+        # no mandaste auth_token o el formato del header esta mal
         return {}, 401

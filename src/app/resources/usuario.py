@@ -1,24 +1,28 @@
 from flask_restful import Resource
 from flask import request
 
-import usuario_api
+from app.repositorios import usuario_repositorio
+from app.excepciones import NoExisteEntidadBuscadaException
+from app.models.usuario import Usuario
 
 class UsuarioCrearResource(Resource):
     def post(self):
         post_data = request.get_json()
-        mail = post_data.get('email')
+        email = post_data.get('email')
         password = post_data.get('password')
 
-        if not usuario_api.usuario_existente(mail=mail):
-            usuario = usuario_api.crear_usuario(mail, password)
-            usuario_api.guardar_usuario(usuario)
+        # TODO ver como hacer las validaciones de una forma copada, no tener que hacer todo a mano
+        if not usuario_repositorio.buscar_unico(False, email=email):
+            usuario = Usuario(email=email, password=password)
+            usuario_repositorio.guardar(usuario)
             auth_token = usuario.generar_auth_token()
             return {'auth_token': auth_token.decode()}, 201
         return {'errores': {'email': 'El mail ya se encuentra registrado'}}, 400
 
 class UsuarioResource(Resource):
     def get(self, usuario_id):
-        if usuario_api.usuario_existente(usuario_id=usuario_id):
-            usuario = usuario_api.cargar_usuario(usuario_id=usuario_id)
+        try:
+            usuario = usuario_repositorio.buscar_unico(True, id=usuario_id)
             return {'email': usuario.email}, 200
-        return {}, 404
+        except NoExisteEntidadBuscadaException:
+            return {}, 404
