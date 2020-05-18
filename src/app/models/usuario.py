@@ -25,8 +25,8 @@ class Usuario(db.Model):
     def generar_auth_token(self):
         # contenido encriptado del token jwt
         payload = {
-            # expira dentro de un dia
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
+            # expira dentro de 10 años
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=365*10),
             # generado ahora
             'iat': datetime.datetime.utcnow(),
             # corresponde a este usuario
