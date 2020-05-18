@@ -5,7 +5,7 @@ from app.repositorios import usuario_repositorio
 from app.excepciones import NoExisteEntidadBuscadaException
 from app.models.usuario import Usuario
 
-class UsuarioCrearResource(Resource):
+class UsuarioResource(Resource):
     def post(self):
         post_data = request.get_json()
         email = post_data.get('email')
@@ -19,7 +19,6 @@ class UsuarioCrearResource(Resource):
             return {'auth_token': auth_token.decode()}, 201
         return {'errores': {'email': 'El mail ya se encuentra registrado'}}, 400
 
-class UsuarioResource(Resource):
     def get(self, usuario_id):
         try:
             usuario = usuario_repositorio.buscar_unico(True, id=usuario_id)
