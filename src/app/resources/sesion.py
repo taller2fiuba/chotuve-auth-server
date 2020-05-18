@@ -10,7 +10,7 @@ class SesionResource(Resource):
         # Buscar el usuario por email
         usuario = Usuario.query.filter_by(
             email=post_data.get('email')
-        ).first()
+        ).one_or_none()
         if usuario and usuario.verificar_password(post_data.get('password')):
             auth_token = usuario.generar_auth_token()
             return {'auth_token': auth_token.decode()}, 200

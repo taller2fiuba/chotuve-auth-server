@@ -35,7 +35,7 @@ class SesionResourceTestCase(BaseTestCase):
         token = 'token_invalido'
         response = self.app.get('/usuario/sesion', headers={
             'Authorization': f'Bearer {token}'})
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
     def test_validacion_de_token_fallido_token_no_enviado(self):
         response = self.app.get('/usuario/sesion')

@@ -1,7 +1,6 @@
 import unittest
 
 from app import app, db
-from app.repositorios import usuario_repositorio
 from app.models.usuario import Usuario
 from config import Config
 
@@ -19,5 +18,6 @@ class BaseTestCase(unittest.TestCase):
 
     def crear_usuario(self, email, password):
         usuario = Usuario(email=email, password=password)
-        usuario_repositorio.guardar(usuario)
+        db.session.add(usuario)
+        db.session.commit()
         return usuario
