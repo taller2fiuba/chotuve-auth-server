@@ -34,12 +34,12 @@ class Usuario(db.Model):
         }
         return jwt.encode(
             payload,
-            app.config.get('AUTH_TOKEN_KEY'),
+            app.config.get('JWT_SECRET_KEY'),
             algorithm='HS256'
         )
 
     @staticmethod
     def validar_auth_token(auth_token):
         "Valida un auth token y devuelve el id de usuario que fue puesto dentro de él"
-        payload = jwt.decode(auth_token, app.config.get('AUTH_TOKEN_KEY'))
+        payload = jwt.decode(auth_token, app.config.get('JWT_SECRET_KEY'))
         return payload['sub']

@@ -15,5 +15,5 @@ def blow(envvar):
 class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or blow('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    AUTH_TOKEN_KEY = os.environ.get('AUTH_TOKEN_KEY') or 'AUTH_TOKEN_KEY'
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or 'JWT_SECRET_KEY'
     FLASK_ENV = os.environ.get('FLASK_ENV') or 'development'
