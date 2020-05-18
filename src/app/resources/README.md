@@ -1,12 +1,12 @@
 # Documento de API temporal, a migrar a OPEN API SPEC
 
-## ping
+## ping: ver el estado del server
 Ruta: GET /ping
 
 Respuesta: 200
 
 ## usuario
-### Get
+### Get: obtener email de usuario_id
 Ruta: GET /usuario/<usuario_id>
 
 Repuestas:
@@ -14,7 +14,7 @@ Repuestas:
 - En caso de exito: CODE 200 BODY {email: email}
 - Si no existe usuario con ese id: CODE 404
 
-### Post
+### Post: registrar un nuevo usuario
 Ruta: POST /usuario BODY email, password
 
 Repuestas:
@@ -23,7 +23,7 @@ Repuestas:
 - Mail ya registrado: CODE 400 BODY {errores: email: error_string}
 
 ## sesion
-### Get
+### Get: validar el token de sesion
 Ruta: GET /usuario/sesion HEADER Authorization: Bearer <token>
 
 Repuestas:
@@ -31,7 +31,7 @@ Repuestas:
 - En caso de exito: CODE 200 BODY {usuario_id: usuario_id}
 - Si no se envio token o es invalido o caducado: CODE 401
 
-### Post
+### Post: iniciar sesion
 Ruta: POST /usuario/sesion BODY email, password
 
 Repuestas:
