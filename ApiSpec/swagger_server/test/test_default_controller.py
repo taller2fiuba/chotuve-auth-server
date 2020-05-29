@@ -17,6 +17,17 @@ from swagger_server.test import BaseTestCase
 class TestDefaultController(BaseTestCase):
     """DefaultController integration test stubs"""
 
+    def test_base_de_datos_delete(self):
+        """Test case for base_de_datos_delete
+
+        Elimina todas las tablas de la base de datos
+        """
+        response = self.client.open(
+            '/Chotuve1/chotuveAuthServer/1.0.0/base_de_datos',
+            method='DELETE')
+        self.assert200(response,
+                       'Response body is : ' + response.data.decode('utf-8'))
+
     def test_pin_get(self):
         """Test case for pin_get
 

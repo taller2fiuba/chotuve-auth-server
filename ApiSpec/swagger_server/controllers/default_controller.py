@@ -10,6 +10,17 @@ from swagger_server.models.usuario_id import UsuarioId  # noqa: E501
 from swagger_server import util
 
 
+def base_de_datos_delete():  # noqa: E501
+    """Elimina todas las tablas de la base de datos
+
+    Elimina todas las tablas de la base de datos # noqa: E501
+
+
+    :rtype: None
+    """
+    return 'do some magic!'
+
+
 def pin_get():  # noqa: E501
     """Ping del App Server
 

@@ -118,6 +118,16 @@ paths:
           schema:
             $ref: "#/definitions/MensajeCampoInvalido"
       x-swagger-router-controller: "swagger_server.controllers.default_controller"
+  /base_de_datos:
+    delete:
+      summary: "Elimina todas las tablas de la base de datos"
+      description: "Elimina todas las tablas de la base de datos"
+      operationId: "base_de_datos_delete"
+      parameters: []
+      responses:
+        "200":
+          description: "Tablas borradas exitosamente"
+      x-swagger-router-controller: "swagger_server.controllers.default_controller"
 definitions:
   MailUsuario:
     type: "object"
