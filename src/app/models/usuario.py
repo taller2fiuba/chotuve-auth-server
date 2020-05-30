@@ -38,6 +38,7 @@ class Usuario(db.Model):
             algorithm='HS256'
         )
 
+    # TODO actualizar cuando se tenga toda la información
     def serializar(self):
         return {'id': self.id,
                 'nombre': '',
