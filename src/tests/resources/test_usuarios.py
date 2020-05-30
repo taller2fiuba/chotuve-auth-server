@@ -40,5 +40,9 @@ class UsuariosResourceTestCase(BaseTestCase):
         self.assertEqual(len(response.json), 2)
         self.assertListEqual(email_response, ['b@test.com', 'c@test.com'])
 
+    def test_get_usuarios_con_ids_invalidos(self):
+        response = self.app.get('/usuarios?ids=a')
+        self.assertEqual(response.status_code, 400)
+
 if __name__ == '__main__':
     unittest.main()
