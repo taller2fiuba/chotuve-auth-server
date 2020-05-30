@@ -14,10 +14,11 @@ migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
 API = Api(app)
 
-from .resources import ping, usuario, sesion, base_de_datos
+from .resources import ping, usuario, usuarios, sesion, base_de_datos
 
 API.add_resource(ping.PingResource, '/ping')
 API.add_resource(usuario.UsuarioResource, '/usuario')
+API.add_resource(usuarios.UsuariosResource, '/usuarios', endpoint='Usuarios')
 API.add_resource(usuario.UsuarioResource, '/usuario/<int:usuario_id>', methods=["GET"], endpoint='UsuarioConIdResource')
 API.add_resource(sesion.SesionResource, '/usuario/sesion')
 API.add_resource(base_de_datos.BaseDeDatosResource, '/base_de_datos')
