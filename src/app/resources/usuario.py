@@ -33,7 +33,7 @@ class UsuarioResource(Resource):
             else:
                 ids = [int(i) for i in ids.split(',')]
                 usuarios = Usuario.query.filter(Usuario.id.in_((ids)))
-            return list(map(lambda dev: dev.serializar(), usuarios)), 200
+            return list(map(lambda usuario: usuario.serializar(), usuarios)), 200
         except flask_sqlalchemy.orm.exc.NoResultFound:
             return {}, 404
         except ValueError:
