@@ -18,9 +18,10 @@ from .resources import ping, usuario, usuario_id, sesion, base_de_datos
 
 API.add_resource(ping.PingResource, '/ping')
 API.add_resource(usuario.UsuarioResource, '/usuario')
-API.add_resource(usuario_id.UsuarioIdResource, '/usuario/<int:usuario_id>')
+API.add_resource(usuario_id.UsuarioIdResource, '/usuario/<int:usuario_id>', methods=["GET", "PUT"])
 API.add_resource(sesion.SesionResource, '/usuario/sesion')
 API.add_resource(base_de_datos.BaseDeDatosResource, '/base_de_datos')
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
