@@ -6,6 +6,7 @@ ADD ./requirements/prod.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -q -r /tmp/requirements.txt
 
 # Add our code
+ADD ./bin/wait-for-db /bin/wait-for-db
 ADD ./entry.sh /entry.sh
 ADD ./src /var/www/app
 WORKDIR /var/www/app
