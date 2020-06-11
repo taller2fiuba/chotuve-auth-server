@@ -5,4 +5,9 @@
 # 2) Correr test unitarios
 # 3) Crear archivo reporte de codigo cubierto por las pruebas con coverage
 
-exec $(dirname "$0")/exec-dev 'pylint --load-plugins pylint_flask src && coverage run -m nose2 -v && coverage report -m'
+
+exec $(dirname "$0")/dev-compose exec \
+    -e DATABASE_URL="sqlite:///:memory:" \
+    chotuve_auth \
+    sh -c "pylint --load-plugins pylint_flask src && coverage run -m nose2 -v && coverage report -m"
+
