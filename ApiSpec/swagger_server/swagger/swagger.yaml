@@ -19,11 +19,11 @@ tags:
 schemes:
 - "https"
 paths:
-  /pin:
+  /ping:
     get:
       summary: "Ping del App Server"
       description: "Permite ver el estado del servidor"
-      operationId: "pin_get"
+      operationId: "ping_get"
       produces:
       - "application/json"
       parameters: []

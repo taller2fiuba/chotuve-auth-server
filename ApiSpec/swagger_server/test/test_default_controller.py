@@ -28,13 +28,13 @@ class TestDefaultController(BaseTestCase):
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
-    def test_pin_get(self):
-        """Test case for pin_get
+    def test_ping_get(self):
+        """Test case for ping_get
 
         Ping del App Server
         """
         response = self.client.open(
-            '/Chotuve1/chotuveAuthServer/1.0.0/pin',
+            '/Chotuve1/chotuveAuthServer/1.0.0/ping',
             method='GET')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))

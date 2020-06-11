@@ -21,7 +21,7 @@ def base_de_datos_delete():  # noqa: E501
     return 'do some magic!'
 
 
-def pin_get():  # noqa: E501
+def ping_get():  # noqa: E501
     """Ping del App Server
 
     Permite ver el estado del servidor # noqa: E501
