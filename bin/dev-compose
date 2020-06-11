@@ -2,4 +2,4 @@
 
 # Atajo para ejecutar docker-compose para el server de dev
 
-docker-compose -f $(dirname "$0")/chotuve_dev/docker-compose.dev.yml "$@"
+docker-compose -f $(dirname "$0")/chotuve_auth_dev/docker-compose.dev.yml "$@"

@@ -5,6 +5,9 @@ import flask_sqlalchemy
 from app import db
 from app.models.usuario import Usuario
 
+OFFSET_POR_DEFECTO = 0
+CANTIDAD_POR_DEFECTO = 10
+
 class UsuarioResource(Resource):
     def post(self):
         post_data = request.get_json()
@@ -20,9 +23,18 @@ class UsuarioResource(Resource):
             return {'auth_token': auth_token.decode()}, 201
         return {'errores': {'email': 'El mail ya se encuentra registrado'}}, 400
 
-    def get(self, usuario_id):
+    def get(self):
         try:
-            usuario = Usuario.query.filter_by(id=usuario_id).one()
-            return {'email': usuario.email}, 200
+            ids = request.args.get('ids', None)
+            offset = request.args.get('offset', OFFSET_POR_DEFECTO)
+            cantidad = request.args.get('cantidad', CANTIDAD_POR_DEFECTO)
+            if not ids:
+                usuarios = Usuario.query.offset(offset).limit(cantidad).all()
+            else:
+                ids = [int(i) for i in ids.split(',')]
+                usuarios = Usuario.query.filter(Usuario.id.in_((ids)))
+            return list(map(lambda usuario: usuario.serializar(), usuarios)), 200
         except flask_sqlalchemy.orm.exc.NoResultFound:
             return {}, 404
+        except ValueError:
+            return {}, 400

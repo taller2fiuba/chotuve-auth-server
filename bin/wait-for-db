@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+
+import psycopg2
+import os
+import time
+import sys
+
+INTENTOS=20
+ESPERA=5
+
+for n in range(INTENTOS):
+    try:
+        psycopg2.connect(os.getenv('DATABASE_URL'))
+    except psycopg2.OperationalError:
+        print(f'La base no esta disponible, reintentando en {ESPERA} seg. ({n + 1}/{INTENTOS})', file=sys.stderr)
+        time.sleep(ESPERA)
+        continue
+
+    sys.exit(0)
+sys.exit(1)
+
+

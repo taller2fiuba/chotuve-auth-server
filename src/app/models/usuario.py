@@ -38,6 +38,16 @@ class Usuario(db.Model):
             algorithm='HS256'
         )
 
+    # TODO actualizar cuando se tenga toda la información
+    def serializar(self):
+        return {'id': self.id,
+                'nombre': '',
+                'apellido': '',
+                'email': self.email,
+                'telefono': '',
+                'foto': '',
+                }
+
     @staticmethod
     def validar_auth_token(auth_token):
         "Valida un auth token y devuelve el id de usuario que fue puesto dentro de él"
