@@ -1,0 +1,186 @@
+---
+swagger: "2.0"
+info:
+  description: "Api de Chotuve Auth Server"
+  version: "1.0.0"
+  title: "Chotuve Auth Server"
+  contact:
+    email: "you@your-company.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "virtserver.swaggerhub.com"
+basePath: "/Chotuve1/chotuveAuthServer/1.0.0"
+tags:
+- name: "admins"
+  description: "Secured Admin-only calls"
+- name: "developers"
+  description: "Operations available to regular developers"
+schemes:
+- "https"
+paths:
+  /ping:
+    get:
+      summary: "Ping del App Server"
+      description: "Permite ver el estado del servidor"
+      operationId: "ping_get"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        "200":
+          description: "El servidor esta activo"
+      x-swagger-router-controller: "swagger_server.controllers.default_controller"
+  /usuario:
+    get:
+      summary: "Devuelve el email del usuario correspondiente"
+      description: "Dado el id de un usuario, se devuelve el email asociado al mismo"
+      operationId: "usuario_get"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "usuario_id"
+        in: "path"
+        description: "Id del usuario"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "El usuario_id corresponde a un usuario valido"
+          schema:
+            $ref: "#/definitions/MailUsuario"
+        "404":
+          description: "No existe usuario con ese id"
+      x-swagger-router-controller: "swagger_server.controllers.default_controller"
+    post:
+      summary: "Crea un nuevo usuario"
+      description: "Crea un usuario con los datos recibidos"
+      operationId: "usuario_post"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "nuevo_usuario"
+        required: true
+        schema:
+          $ref: "#/definitions/Usuario"
+      responses:
+        "201":
+          description: "El usuario se creo exitosamente"
+          schema:
+            $ref: "#/definitions/Token"
+        "400":
+          description: "Error, el mail ya se encuntra registrado"
+          schema:
+            $ref: "#/definitions/ErrorMailRegistrado"
+      x-swagger-router-controller: "swagger_server.controllers.default_controller"
+  /usuario/sesion:
+    get:
+      summary: "Validar token de sesion"
+      description: "...."
+      operationId: "usuario_sesion_get"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "Authorization"
+        in: "header"
+        description: "Token pasado como header"
+        required: false
+        type: "string"
+      responses:
+        "200":
+          description: "Validacion exitosa"
+          schema:
+            $ref: "#/definitions/MailUsuario"
+        "401":
+          description: "Token invalido o caducado"
+      x-swagger-router-controller: "swagger_server.controllers.default_controller"
+    post:
+      summary: "Inicio de sesion"
+      description: "Dada la informacion de un usario se devuelve el token identificador\
+        \ del mismo"
+      operationId: "usuario_sesion_post"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "usuario"
+        required: false
+        schema:
+          $ref: "#/definitions/Usuario_id"
+      responses:
+        "200":
+          description: "Inicio de sesion exitosa"
+          schema:
+            $ref: "#/definitions/Token"
+        "400":
+          description: "Mail o contraseña incorrectos"
+          schema:
+            $ref: "#/definitions/MensajeCampoInvalido"
+      x-swagger-router-controller: "swagger_server.controllers.default_controller"
+  /base_de_datos:
+    delete:
+      summary: "Elimina todas las tablas de la base de datos"
+      description: "Elimina todas las tablas de la base de datos"
+      operationId: "base_de_datos_delete"
+      parameters: []
+      responses:
+        "200":
+          description: "Tablas borradas exitosamente"
+      x-swagger-router-controller: "swagger_server.controllers.default_controller"
+definitions:
+  MailUsuario:
+    type: "object"
+    required:
+    - "email"
+    properties:
+      email:
+        type: "string"
+    example:
+      email: "email"
+  Usuario:
+    type: "object"
+    required:
+    - "email"
+    - "password"
+    properties:
+      email:
+        type: "string"
+      password:
+        type: "string"
+  Usuario_id:
+    type: "object"
+    required:
+    - "usuario_id"
+    properties:
+      usuario_id:
+        type: "string"
+  Token:
+    type: "object"
+    required:
+    - "auth_token"
+    properties:
+      auth_token:
+        type: "string"
+        format: "uuid"
+    example:
+      auth_token: "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
+  ErrorMailRegistrado:
+    type: "object"
+    required:
+    - "error"
+    properties:
+      error:
+        $ref: "#/definitions/ErrorMailRegistrado_error"
+  MensajeCampoInvalido:
+    type: "object"
+    required:
+    - "mensaje"
+    properties:
+      mensaje:
+        type: "string"
+  ErrorMailRegistrado_error:
+    type: "object"
+    properties:
+      email:
+        type: "string"
