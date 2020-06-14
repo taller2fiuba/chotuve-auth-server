@@ -22,7 +22,7 @@ from .resources import ping, usuario, usuario_id, sesion, base_de_datos
 
 api.add_resource(ping.PingResource, '/ping')
 api.add_resource(usuario.UsuarioResource, '/usuario')
-api.add_resource(usuario_id.UsuarioIdResource, '/usuario/<int:usuario_id>', methods=["GET", "PUT"])
+api.add_resource(usuario_id.UsuarioIdResource, '/usuario/<int:usuario_id>')
 api.add_resource(sesion.SesionResource, '/usuario/sesion')
 api.add_resource(base_de_datos.BaseDeDatosResource, '/base_de_datos')
 
@@ -31,7 +31,6 @@ def unhandled_exception(e):
     tb = traceback.format_exc()
     log.warn(f'Excepcion no manejada: {tb}')
     return {'mensaje': str(e)}, 500
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
