@@ -1,8 +1,6 @@
 import datetime
-# TODO sacar la logica jwt, poner en un servicio
 import jwt
 
-# TODO sacar la logica bcrypt, poner en un servicio
 from app import app, db, bcrypt
 
 class Usuario(db.Model):
@@ -13,6 +11,7 @@ class Usuario(db.Model):
     apellido = db.Column(db.String(255), nullable=True)
     direccion = db.Column(db.String(255), nullable=True)
     telefono = db.Column(db.String(255), nullable=True)
+    foto = db.Column(db.String(255), nullable=True)
 
     def __repr__(self):
         return f'<Usuario {self.email}>'
@@ -41,16 +40,16 @@ class Usuario(db.Model):
             algorithm='HS256'
         )
 
-    # TODO actualizar cuando se tenga toda la información
     def serializar(self):
-        return {'id': self.id,
-                'nombre': self.nombre,
-                'apellido': self.apellido,
-                'email': self.email,
-                'direccion' : self.direccion,
-                'telefono': self.telefono,
-                'foto': None
-                }
+        return {
+            'id': self.id,
+            'nombre': self.nombre,
+            'apellido': self.apellido,
+            'email': self.email,
+            'direccion' : self.direccion,
+            'telefono': self.telefono,
+            'foto': self.foto
+        }
 
     @staticmethod
     def validar_auth_token(auth_token):
