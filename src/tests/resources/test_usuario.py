@@ -1,6 +1,7 @@
 import unittest
 
 from tests.base import BaseTestCase
+from app.models.usuario import Usuario
 
 class UsuarioResourceTestCase(BaseTestCase):
     def test_registracion_exitosa(self):
@@ -72,6 +73,107 @@ class UsuarioResourceTestCase(BaseTestCase):
         self.assertEqual(len(response.json), 2)
         self.assertListEqual(email_response, ['a@test.com', 'c@test.com'])
 
+
+    def test_put_actualizar_perfil_exitosamente(self):
+        usuario = self.crear_usuario('test2@test.com', '1234567')
+        nuevo_nombre = "Lucas"
+        nuevo_apellido = "Perez"
+        nueva_direccion = "La Pampa 1111"
+        nuevo_telefono = "1530449926"
+        response = self.app.put('/usuario/'+str(usuario.id), json={
+            'nombre': nuevo_nombre,
+            'apellido': nuevo_apellido,
+            'telefono': nuevo_telefono,
+            'direccion': nueva_direccion})
+
+        usuario = Usuario.query.filter_by(email="test2@test.com").one_or_none()
+
+        self.assertEqual(usuario.nombre, nuevo_nombre)
+        self.assertEqual(usuario.apellido, nuevo_apellido)
+        self.assertEqual(usuario.direccion, nueva_direccion)
+        self.assertEqual(usuario.telefono, nuevo_telefono)
+        self.assertEqual(response.status_code, 200)
+
+    def test_put_actualizar_perfil_id_inexistente(self):
+        id_no_existe = 15121
+        nuevo_nombre = "Lucas"
+        nuevo_apellido = "Perez"
+        nueva_direccion = "La Pampa 1111"
+        nuevo_telefono = "1530449926"
+        response = self.app.put('/usuario/'+str(id_no_existe), json={
+            'nombre': nuevo_nombre,
+            'apellido': nuevo_apellido,
+            'telefono': nuevo_telefono,
+            'direccion': nueva_direccion})
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_perfil_existente(self):
+        usuario = self.crear_usuario('test2@test.com', '1234567')
+        response = self.app.get('/usuario/'+str(usuario.id))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json, {'id': 1,
+                                         'nombre': None,
+                                         'apellido': None,
+                                         'email': 'test2@test.com',
+                                         'telefono': None,
+                                         'direccion': None,
+                                         'foto': None})
+
+    def test_get_perfil_todos_los_campos_modificado_existente(self):
+        usuario = self.crear_usuario('test2@test.com', '1234567')
+        nuevo_nombre = "Lucas"
+        nuevo_apellido = "Perez"
+        nueva_direccion = "La Pampa 1111"
+        nuevo_telefono = "1530449926"
+        response = self.app.put('/usuario/'+str(usuario.id), json={
+            'nombre': nuevo_nombre,
+            'apellido': nuevo_apellido,
+            'telefono': nuevo_telefono,
+            'direccion': nueva_direccion})
+        #actualizo usuario porque la base de datos cierra la sesion despues del put
+        usuario = Usuario.query.filter_by(email="test2@test.com").one_or_none()
+
+        response = self.app.get('/usuario/'+str(usuario.id))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json, {'id': usuario.id,
+                                         'nombre': usuario.nombre,
+                                         'apellido': usuario.apellido,
+                                         'email': usuario.email,
+                                         'telefono': usuario.telefono,
+                                         'direccion': usuario.direccion,
+                                         'foto': None})
+
+    def test_get_perfil_parcialmente_modificado_existente(self):
+        usuario = self.crear_usuario('test2@test.com', '1234567')
+        nuevo_nombre = "Lucas"
+        nuevo_apellido = "Perez"
+        nueva_direccion = None
+        nuevo_telefono = "1530449926"
+        response = self.app.put('/usuario/'+str(usuario.id), json={
+            'nombre': nuevo_nombre,
+            'apellido': nuevo_apellido,
+            'telefono': nuevo_telefono,
+            'direccion': nueva_direccion})
+        #actualizo usuario porque la base de datos cierra la sesion despues del put
+        usuario = Usuario.query.filter_by(email="test2@test.com").one_or_none()
+
+        response = self.app.get('/usuario/'+str(usuario.id))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json, {'id': usuario.id,
+                                         'nombre': usuario.nombre,
+                                         'apellido': usuario.apellido,
+                                         'email': usuario.email,
+                                         'telefono': usuario.telefono,
+                                         'direccion': usuario.direccion,
+                                         'foto': None})
+
+    def test_get_perfil_inexistente(self):
+        id_no_existe = 15121
+        response = self.app.get('/usuario/'+str(id_no_existe))
+        self.assertEqual(response.status_code, 404)
 
 if __name__ == '__main__':
     unittest.main()
