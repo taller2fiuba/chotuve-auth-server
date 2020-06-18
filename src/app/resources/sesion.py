@@ -1,35 +1,42 @@
 from flask_restful import Resource
-from flask import request
+from flask import request, abort
 import jwt
 
 from app.models.usuario import Usuario
 
 class SesionResource(Resource):
     def post(self):
-        post_data = request.get_json()
-        # Buscar el usuario por email
+        if not 'application/json' in request.content_type:
+            abort(400)
+
+        data = request.get_json()
+        email, clave = data.get('email'), data.get('password')
+        if not email or not clave:
+            abort(400)
+
         usuario = Usuario.query.filter_by(
-            email=post_data.get('email')
+            email=email,
+            habilitado=True
         ).one_or_none()
-        if usuario and usuario.verificar_password(post_data.get('password')):
-            auth_token = usuario.generar_auth_token()
-            return {'auth_token': auth_token.decode()}, 200
-        return {'mensaje': 'Email o constraseña invalidos'}, 400
+
+        if not usuario or not usuario.verificar_password(clave):
+            # TODO: Esto debería ser un 401
+            return {'mensaje': 'Email o constraseña invalidos'}, 400
+
+        auth_token = usuario.generar_auth_token()
+        return {'auth_token': auth_token.decode()}, 200
 
     def get(self):
         auth_header = request.headers.get('Authorization')
-        auth_token = ''
-        if auth_header:
-            # el auth_token esta despues Bearer
-            split = auth_header.split(" ")
-            if len(split) == 2 and split[0] == 'Bearer':
-                auth_token = split[1]
-        if auth_token:
-            try:
-                usuario_id = Usuario.validar_auth_token(auth_token)
-                return {'usuario_id': usuario_id}, 200
-            except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
-                # token invalido o caducado
-                return {}, 401
-        # no mandaste auth_token o el formato del header esta mal
-        return {}, 401
+        if not auth_header or not auth_header.startswith('Bearer '):
+            abort(401)
+
+        _, token = auth_header.split(' ')[:2]
+
+        try:
+            usuario = Usuario.validar_auth_token(token)
+            if not usuario:
+                abort(401)
+            return {'usuario_id': usuario.id}, 200
+        except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+            abort(401)
