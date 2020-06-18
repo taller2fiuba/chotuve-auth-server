@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 from config import Config, configurar_logger
 import logging
+import traceback
 
 app = Flask(__name__)
 app.config.from_object(Config)
