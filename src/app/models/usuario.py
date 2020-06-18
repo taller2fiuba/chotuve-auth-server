@@ -49,7 +49,8 @@ class Usuario(db.Model):
             'email': self.email,
             'direccion' : self.direccion,
             'telefono': self.telefono,
-            'foto': self.foto
+            'foto': self.foto,
+            'habilitado': self.habilitado
         }
 
     @staticmethod

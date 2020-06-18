@@ -118,7 +118,8 @@ class UsuarioResourceTestCase(BaseTestCase):
                                          'email': 'test2@test.com',
                                          'telefono': None,
                                          'direccion': None,
-                                         'foto': None})
+                                         'foto': None,
+                                         'habilitado': True})
 
     def test_get_perfil_todos_los_campos_modificado_existente(self):
         usuario = self.crear_usuario('test2@test.com', '1234567')
@@ -143,7 +144,8 @@ class UsuarioResourceTestCase(BaseTestCase):
                                          'email': usuario.email,
                                          'telefono': usuario.telefono,
                                          'direccion': usuario.direccion,
-                                         'foto': None})
+                                         'foto': None,
+                                         'habilitado': True})
 
     def test_get_perfil_parcialmente_modificado_existente(self):
         usuario = self.crear_usuario('test2@test.com', '1234567')
@@ -168,12 +170,33 @@ class UsuarioResourceTestCase(BaseTestCase):
                                          'email': usuario.email,
                                          'telefono': usuario.telefono,
                                          'direccion': usuario.direccion,
-                                         'foto': None})
+                                         'foto': None,
+                                         'habilitado': True})
 
     def test_get_perfil_inexistente(self):
         id_no_existe = 15121
         response = self.app.get('/usuario/'+str(id_no_existe))
         self.assertEqual(response.status_code, 404)
+
+    def test_deshabilitar_usuario(self):
+        usuario = self.crear_usuario('test2@test.com', '1234567')
+        response = self.app.put('/usuario/'+str(usuario.id), json={
+            'habilitado': False
+        })
+
+        usuario = Usuario.query.filter_by(email="test2@test.com").one_or_none()
+
+        response = self.app.get('/usuario/'+str(usuario.id))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json, {'id': usuario.id,
+                                         'nombre': usuario.nombre,
+                                         'apellido': usuario.apellido,
+                                         'email': usuario.email,
+                                         'telefono': usuario.telefono,
+                                         'direccion': usuario.direccion,
+                                         'foto': None,
+                                         'habilitado': False})
 
 if __name__ == '__main__':
     unittest.main()
