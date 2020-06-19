@@ -12,6 +12,7 @@ class Usuario(db.Model):
     direccion = db.Column(db.String(255), nullable=True)
     telefono = db.Column(db.String(255), nullable=True)
     foto = db.Column(db.String(255), nullable=True)
+    habilitado = db.Column(db.Boolean, default=True, nullable=False)
 
     def __repr__(self):
         return f'<Usuario {self.email}>'
@@ -48,11 +49,20 @@ class Usuario(db.Model):
             'email': self.email,
             'direccion' : self.direccion,
             'telefono': self.telefono,
-            'foto': self.foto
+            'foto': self.foto,
+            'habilitado': self.habilitado
         }
 
     @staticmethod
     def validar_auth_token(auth_token):
-        "Valida un auth token y devuelve el id de usuario que fue puesto dentro de él"
+        """
+        Valida un auth token. Si el token es válido y el usuario está
+        habilitado, devuelve al usuario correspondiente. En caso contrario
+        devuelve None.
+        """
         payload = jwt.decode(auth_token, app.config.get('JWT_SECRET_KEY'))
-        return payload['sub']
+        usuario_id = payload['sub']
+        usuario = Usuario.query.filter_by(id=usuario_id).one_or_none()
+        if not usuario or not usuario.habilitado:
+            return None
+        return usuario

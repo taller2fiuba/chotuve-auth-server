@@ -5,8 +5,10 @@ import requests
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
+from flask_cors import CORS
 from config import Config, configurar_logger
 import logging
+import traceback
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -14,6 +16,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
 api = Api(app)
+CORS(app)
 
 configurar_logger()
 log = logging.getLogger(__name__)

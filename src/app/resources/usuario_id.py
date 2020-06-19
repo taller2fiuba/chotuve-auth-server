@@ -30,6 +30,8 @@ class UsuarioIdResource(Resource):
             usuario.direccion = post_data['direccion']
         if 'foto' in post_data:
             usuario.foto = post_data['foto']
+        if 'habilitado' in post_data:
+            usuario.habilitado = bool(post_data['habilitado'])
 
         db.session.commit()
         return {}, 200
