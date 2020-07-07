@@ -9,6 +9,7 @@ class SesionResourceTestCase(BaseTestCase):
         usuario = self.crear_usuario('test@test.com', '123456')
         response = self.iniciar_sesion_usuario()
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json['id'], usuario.id)
         self.assertEqual(Usuario.validar_auth_token(response.json['auth_token']).id, usuario.id)
 
     def test_inicio_de_sesion_fallido_no_registrado(self):

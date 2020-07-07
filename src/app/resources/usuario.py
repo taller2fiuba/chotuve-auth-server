@@ -20,7 +20,7 @@ class UsuarioResource(Resource):
             db.session.add(usuario)
             db.session.commit()
             auth_token = usuario.generar_auth_token()
-            return {'auth_token': auth_token.decode()}, 201
+            return {'auth_token': auth_token.decode(), 'id': usuario.id}, 201
         return {'errores': {'email': 'El mail ya se encuentra registrado'}}, 400
 
     def get(self):

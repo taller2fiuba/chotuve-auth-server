@@ -10,6 +10,7 @@ class UsuarioResourceTestCase(BaseTestCase):
             'password': '123456'})
         self.assertEqual(response.status_code, 201)
         self.assertTrue(response.json['auth_token'])
+        self.assertTrue(response.json['id'], 1)
 
     def test_registracion_fallida_ya_registrado(self):
         self.crear_usuario('test@test.com', '123456')
