@@ -2,7 +2,7 @@ version: '3.4'
 services:
     chotuve_auth:
         network_mode: host
-        image: python:3.8
+        image: python:3.8.3
         volumes:
             - ../..:/var/www/app
             - chotuve_pip_cache:/root
