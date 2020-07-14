@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.8.3
 
 ADD ./requirements/prod.txt /tmp/requirements.txt
 
