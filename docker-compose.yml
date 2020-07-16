@@ -12,6 +12,7 @@ services:
             CHOTUVE_MEDIA_URL: ${CHOTUVE_MEDIA_URL:-http://chotuve_media:27080}
             CHOTUVE_AUTH_ADMIN_USUARIO: ${CHOTUVE_AUTH_ADMIN_USUARIO:-}
             CHOTUVE_AUTH_ADMIN_CLAVE: ${CHOTUVE_AUTH_ADMIN_CLAVE:-}
+            IGNORAR_APP_SERVER_TOKEN: ${IGNORAR_APP_SERVER_TOKEN:-1}
         ports:
             - ${CHOTUVE_AUTH_PORT:-26080}:26080
         links:
