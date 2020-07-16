@@ -25,6 +25,13 @@ class AppServerResource(Resource):
 
     @requiere_admin
     def get(self, app_id=None):
+        if app_id:
+            app_server = AppServer.query.filter(id=app_id).one_or_none()
+            if not app_server:
+                return {}, 404
+
+            return app_server.serializar(), 200
+
         offset = request.args.get('offset', str(OFFSET_POR_DEFECTO))
         cantidad = request.args.get('cantidad', str(CANTIDAD_POR_DEFECTO))
         if not offset.isdigit() or not cantidad.isdigit():
