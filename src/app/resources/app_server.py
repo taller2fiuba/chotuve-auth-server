@@ -26,7 +26,7 @@ class AppServerResource(Resource):
     @requiere_admin
     def get(self, app_id=None):
         if app_id:
-            app_server = AppServer.query.filter(id=app_id).one_or_none()
+            app_server = AppServer.query.filter_by(id=app_id).one_or_none()
             if not app_server:
                 return {}, 404
 
@@ -44,7 +44,7 @@ class AppServerResource(Resource):
 
     @requiere_admin
     def delete(self, app_id):
-        app_server = AppServer.query.filter(id=app_id).one_or_none()
+        app_server = AppServer.query.filter_by(id=app_id).one_or_none()
         if not app_server:
             return {}, 404
 

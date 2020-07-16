@@ -21,7 +21,8 @@ CORS(app)
 configurar_logger()
 log = logging.getLogger(__name__)
 
-from .resources import ping, usuario, usuario_id, sesion, base_de_datos, usuario_admin, app_server
+from .resources import ping, usuario, usuario_id, sesion, base_de_datos, \
+                       usuario_admin, app_server, app_server_sesion
 
 api.add_resource(ping.PingResource, '/ping')
 api.add_resource(usuario.UsuarioResource, '/usuario')
@@ -36,7 +37,7 @@ api.add_resource(app_server.AppServerResource,
 api.add_resource(app_server.AppServerResource, 
                  '/app-server', 
                  methods=['GET', 'POST'])
-
+api.add_resource(app_server_sesion.AppServerSesionResource, '/app-server/sesion')
 
 @app.errorhandler(Exception)
 def unhandled_exception(e):
