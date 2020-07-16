@@ -1,0 +1,286 @@
+swagger: '2.0'
+info:
+  description: Api de Chotuve Auth Server
+  version: 1.0.0
+  title: Chotuve Auth Server
+
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+paths:
+  /ping:
+    get:
+      summary: Ping del App Server
+      description: Permite ver el estado del servidor
+      produces:
+      - application/json
+      responses:
+        200:
+          description: El servidor esta activo
+  /usuario:
+    post:
+      summary: Crea un nuevo usuario
+      description: Crea un usuario con los datos recibidos
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: nuevo usuario
+        schema:
+          $ref: '#/definitions/UsuarioPost'
+        required: True
+      responses:
+        201:
+          description: El usuario se creo exitosamente
+          schema:
+            $ref: '#/definitions/Token'
+        400:
+          description: Error, el mail ya se encuentra registrado
+          schema:
+            $ref: '#/definitions/ErrorMailRegistrado'
+    get:
+      summary: Obtener un usuarios
+      operationId: obtenerUsuarios
+      description: Devuelve los usuarios paginados y que conciden con los parámetros
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: ids
+          type: array
+          collectionFormat: csv
+          items:
+            type: integer
+            format: int64
+          description: ids de los usuarios a obtener
+        - in: query
+          name: offset
+          description: numero de registros a omitir para paginación
+          type: integer
+          format: int32
+          minimum: 0
+          default: 0
+        - in: query
+          name: limit
+          description: máximo número de registros a devolver
+          type: integer
+          format: int32
+          minimum: 0
+          default: 10
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/UsuarioResponse'
+        404:
+          description: El video no existe
+  /usuario/{id}:
+    get:
+      summary: Obtener un usuario por Id
+      operationId: obtenerUsuarioPorId
+      description: Devuelve el usuario que coincide con el id
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: Usuario id
+          type: integer
+          format: int64
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/UsuarioResponse'
+        404:
+          description: El video no existe
+    put:
+      summary: Editar un usuario
+      operationId: editarUsuario
+      description: Edita el usuario dado por el id
+      consumes:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: Usuario id
+          type: integer
+          format: int64
+          required: true
+        - in: body
+          name: video 
+          description: Campos a editar del usuario
+          schema:
+            $ref: '#/definitions/UsuarioRequestEdit'
+      responses:
+        200:
+          description: OK
+        404:
+          description: El video no existe
+          
+  /usuario/sesion:
+    get:
+      summary: Validar token de sesion
+      description: ....
+      parameters:
+      - in: header
+        name: Authorization
+        description: Token pasado como header
+        required: False
+        type: string
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Validacion exitosa
+          schema:
+            $ref: '#/definitions/UsuarioId'
+        401:
+          description: Token invalido o caducado
+    post:
+      summary: Inicio de sesion
+      description: Dada la informacion de un usario se devuelve el token identificador del mismo si el usuario está habilitado
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: usuario
+        schema:
+          $ref: '#/definitions/UsuarioSession'
+      responses:
+        200:
+          description: Inicio de sesion exitosa
+          schema:
+            $ref: '#/definitions/Token'
+        400:
+          description: Mail o contraseña incorrectos
+          schema:
+            $ref: '#/definitions/MensajeCampoInvalido'
+definitions:
+  UsuarioRequestEdit:
+    properties:
+      nombre:
+        type: string
+        example: Pedro
+      apellido:
+        type: string
+        example: López
+      telefono:
+        type: string
+        example: 11-44986532
+      direccion:
+        type: string
+        example: Av Las Heras 1200
+      foto:
+        type: string
+        format: url
+        example:  https://www.firebase.com/poerw/plopez.png
+        description: URL donde está la foto
+      habilitado:
+        type: boolean
+        example: false
+  UsuarioResponse:
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 987
+      nombre:
+        type: string
+        example: Pedro
+      apellido:
+        type: string
+        example: López
+      telefono:
+        type: string
+        example: 11-44986532
+      direccion:
+        type: string
+        example: Av Las Heras 1200
+      foto:
+        type: string
+        format: url
+        example:  https://www.firebase.com/poerw/plopez.png
+        description: URL donde está la foto
+      habilitado:
+        type: boolean
+        example: false
+  UsuarioId:
+    type: object
+    required:
+    - usuario_id
+    properties:
+      usuario_id:
+        type: integer
+        format: int64
+        example: 456
+  UsuarioPost:
+    type: object
+    required:
+    - email
+    - password
+    properties:
+      email:
+        type: string
+        description: El mail tiene que ser único
+      password:
+        type: string
+  UsuarioSession:
+    type: object
+    required: 
+      - email
+      - clave
+    properties:
+      email:
+        type: string
+      clave:
+        type: string
+  Token:
+    type: object
+    required:
+    - auth_token
+    - id
+    properties:
+      auth_token:
+        type: string
+        format: uuid
+        description: token jwt
+      id: 
+        type: integer
+        format: int64
+        example: 123
+        description: Id del usuario 
+  ErrorMailRegistrado:
+    type: object
+    properties:
+      errores:
+        type: object
+        properties:
+          email:
+            type: string
+            example: El mail ya se encuentra registrado
+  MensajeCampoInvalido:
+    type: object
+    required:
+    - mensaje
+    properties:
+      mensaje:
+        type: string
+
+# Added by API Auto Mocking Plugin
+# host: chotuve-auth-server-g4.herokuapp.com
+# basePath: /matiaseiglesias/AppServer/1.0.0
+schemes:
+ - https
+# Added by API Auto Mocking Plugin
+# basePath: /matiaseiglesias/AuthServer/1.0.0
+# Added by API Auto Mocking Plugin
+basePath: /Chotuve1/chotuveAuthServer/1.0.0
+# Added by API Auto Mocking Plugin
+# host: chotuve-auth-server-g4.herokuapp.com
+# Added by API Auto Mocking Plugin
+host: virtserver.swaggerhub.com
