@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import request
+from flask import request, g
 
 from app import app
 from app.models.app_server import AppServer
@@ -11,6 +11,8 @@ def requiere_admin(funcion):
         token = request.headers.get('Authorization', '')[len('Bearer '):]
         if not validar_admin_token(token):
             return {'mensaje': 'Token de usuario inválido'}, 401
+
+        g.es_admin = True
         return funcion(*args, **kwargs)
     return decorated_function
 
@@ -21,6 +23,7 @@ def requiere_app_token(funcion):
         if not validar_app_token(token):
             return {'mensaje': 'App token inválido'}, 401
 
+        g.es_admin = False
         return funcion(*args, **kwargs)
     return decorated_function
 
@@ -30,7 +33,8 @@ def requiere_app_token_o_admin(funcion):
         app_token = request.headers.get('X-APP-SERVER-TOKEN')
         admin_token = request.headers.get('Authorization', '')[len('Bearer '):]
 
-        if validar_admin_token(admin_token) or validar_app_token(app_token):
+        g.es_admin = validar_admin_token(admin_token)
+        if g.es_admin or validar_app_token(app_token):
             return funcion(*args, **kwargs)
 
         return {}, 401
