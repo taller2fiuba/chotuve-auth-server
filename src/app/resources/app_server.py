@@ -24,7 +24,7 @@ class AppServerResource(Resource):
         return {'token': app_server.generar_token()}, 201
 
     @requiere_admin
-    def get(self):
+    def get(self, app_id=None):
         offset = request.args.get('offset', str(OFFSET_POR_DEFECTO))
         cantidad = request.args.get('cantidad', str(CANTIDAD_POR_DEFECTO))
         if not offset.isdigit() or not cantidad.isdigit():
@@ -42,4 +42,5 @@ class AppServerResource(Resource):
             return {}, 404
 
         db.session.delete(app_server)
+        db.session.commit()
         return {}, 200

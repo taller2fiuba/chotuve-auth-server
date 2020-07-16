@@ -29,7 +29,14 @@ api.add_resource(usuario_id.UsuarioIdResource, '/usuario/<int:usuario_id>')
 api.add_resource(usuario_admin.UsuarioAdminResource, '/usuario/admin')
 api.add_resource(sesion.SesionResource, '/usuario/sesion')
 api.add_resource(base_de_datos.BaseDeDatosResource, '/base_de_datos')
-api.add_resource(app_server.AppServerResource, '/app-server')
+api.add_resource(app_server.AppServerResource, 
+                 '/app-server/<int:app_id>', 
+                 methods=['GET', 'DELETE'],
+                 endpoint='AppServerIdResource')
+api.add_resource(app_server.AppServerResource, 
+                 '/app-server', 
+                 methods=['GET', 'POST'])
+
 
 @app.errorhandler(Exception)
 def unhandled_exception(e):
