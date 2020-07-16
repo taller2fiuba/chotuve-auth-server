@@ -1,4 +1,5 @@
 import unittest
+import mock
 
 from tests.base import BaseTestCase
 from app import app
@@ -186,8 +187,10 @@ class UsuarioResourceTestCase(BaseTestCase):
         response = self.app.get('/usuario/'+str(id_no_existe))
         self.assertEqual(response.status_code, 404)
 
-    def test_deshabilitar_usuario(self):
+    @mock.patch('app.autenticacion.validar_admin_token')
+    def test_deshabilitar_usuario(self, mock_admin):
         usuario = self.crear_usuario('test2@test.com', '1234567')
+        mock_admin.return_value = True
         response = self.app.put('/usuario/'+str(usuario.id), json={
             'habilitado': False
         })

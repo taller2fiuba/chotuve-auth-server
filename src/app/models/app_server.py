@@ -5,7 +5,7 @@ class AppServer(db.Model):
     url = db.Column(db.String(255), unique=True, nullable=False, index=True)
     nombre = db.Column(db.String(255), nullable=False)
 
-    def __repr__(self):
+    def __repr__(self): # pragma: no cover
         return f'<AppServer {self.url}>'
 
     def generar_token(self):
@@ -24,7 +24,9 @@ class AppServer(db.Model):
         Valida un token de app server. Si es válido devuelve la entidad app server
         correspondiente, en caso contrario devuelve None.
         """
-        app_id = generador_token.decodificar_token(token).get('app_id')
-        if not app_id:
+        data = generador_token.decodificar_token(token)
+        if not data:
             return None
+
+        app_id = data.get('app_id')
         return AppServer.query.filter_by(id=app_id).one_or_none()

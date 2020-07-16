@@ -11,9 +11,12 @@ CANTIDAD_POR_DEFECTO = 10
 class AppServerResource(Resource):
     @requiere_admin
     def post(self):
-        post_data = request.get_json()
+        post_data = request.get_json() or {}
         url = post_data.get('url')
         nombre = post_data.get('nombre')
+
+        if not url or not nombre:
+            return {'mensaje': 'Falta el nombre y/o la URL.'}, 400
 
         if AppServer.query.filter_by(url=url).one_or_none():
             return {'mensaje': 'El app server ya se encuentra registrado'}, 400
@@ -21,7 +24,7 @@ class AppServerResource(Resource):
         app_server = AppServer(url=url, nombre=nombre)
         db.session.add(app_server)
         db.session.commit()
-        return {'token': app_server.generar_token()}, 201
+        return {'id': app_server.id, 'token': app_server.generar_token()}, 201
 
     @requiere_admin
     def get(self, app_id=None):

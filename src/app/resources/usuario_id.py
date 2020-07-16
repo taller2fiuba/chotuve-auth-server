@@ -33,7 +33,7 @@ class UsuarioIdResource(Resource):
         if 'foto' in post_data:
             usuario.foto = post_data['foto']
         if 'habilitado' in post_data:
-            if g.es_admin:
+            if not g.es_admin:
                 return {'mensaje': 'Requiere admin'}, 401
             usuario.habilitado = bool(post_data['habilitado'])
 
