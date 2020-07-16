@@ -3,6 +3,7 @@ from flask import request
 import flask_sqlalchemy
 
 from app import app, db
+from app.autenticacion import requiere_app_token_o_admin
 from app.models.usuario import Usuario
 
 ADMIN_EMAIL = app.config.get('ADMIN_EMAIL')
@@ -10,6 +11,7 @@ OFFSET_POR_DEFECTO = 0
 CANTIDAD_POR_DEFECTO = 10
 
 class UsuarioResource(Resource):
+    @requiere_app_token_o_admin
     def post(self):
         post_data = request.get_json()
         email = post_data.get('email')
@@ -23,6 +25,7 @@ class UsuarioResource(Resource):
         db.session.commit()
         return {'auth_token': usuario.generar_auth_token(), 'id': usuario.id}, 201
 
+    @requiere_app_token_o_admin
     def get(self):
         try:
             ids = request.args.get('ids', None)

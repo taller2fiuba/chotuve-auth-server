@@ -23,7 +23,10 @@ def decodificar_token(token: str):
     '''
     Decodifica un token de autenticación.
     '''
-    return jwt.decode(token, JWT_SECRET_KEY)['sub']
+    try:
+        return jwt.decode(token, JWT_SECRET_KEY)['sub']
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        return None
 
 def _generar_token(data):
     return _generar_jwt({

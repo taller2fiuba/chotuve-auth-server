@@ -3,10 +3,11 @@ from flask import request
 import flask_sqlalchemy
 
 from app import db
-
+from app.autenticacion import requiere_app_token_o_admin
 from app.models.usuario import Usuario
 
 class UsuarioIdResource(Resource):
+    @requiere_app_token_o_admin
     def get(self, usuario_id):
         try:
             usuario = Usuario.query.filter_by(id=usuario_id).one()
@@ -14,6 +15,7 @@ class UsuarioIdResource(Resource):
         except flask_sqlalchemy.orm.exc.NoResultFound:
             return {}, 404
 
+    @requiere_app_token_o_admin
     def put(self, usuario_id):
         usuario = Usuario.query.filter_by(id=usuario_id).one_or_none()
         if not usuario:

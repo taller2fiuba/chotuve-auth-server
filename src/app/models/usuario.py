@@ -48,6 +48,8 @@ class Usuario(db.Model):
         En caso contrario devuelve None.
         """
         data = generador_token.decodificar_token(auth_token)
+        if not data:
+            return None
         usuario_id = data.get('uid')
         es_admin = data.get('es_admin')
 

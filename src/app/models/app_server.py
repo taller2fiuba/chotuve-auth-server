@@ -25,4 +25,6 @@ class AppServer(db.Model):
         correspondiente, en caso contrario devuelve None.
         """
         app_id = generador_token.decodificar_token(token).get('app_id')
+        if not app_id:
+            return None
         return AppServer.query.filter_by(id=app_id).one_or_none()

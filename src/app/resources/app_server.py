@@ -2,7 +2,7 @@ from flask_restful import Resource
 from flask import request
 
 from app import db
-from app.requiere_admin import requiere_admin
+from app.autenticacion import requiere_admin
 from app.models.app_server import AppServer
 
 OFFSET_POR_DEFECTO = 0

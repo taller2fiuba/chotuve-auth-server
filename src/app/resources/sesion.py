@@ -2,9 +2,11 @@ from flask_restful import Resource
 from flask import request, abort
 import jwt
 
+from app.autenticacion import requiere_app_token
 from app.models.usuario import Usuario
 
 class SesionResource(Resource):
+    @requiere_app_token
     def post(self):
         if not 'application/json' in request.content_type:
             abort(400)
@@ -25,6 +27,7 @@ class SesionResource(Resource):
 
         return {'auth_token': usuario.generar_auth_token(), 'id': usuario.id}, 200
 
+    @requiere_app_token
     def get(self):
         auth_header = request.headers.get('Authorization')
         if not auth_header or not auth_header.startswith('Bearer '):

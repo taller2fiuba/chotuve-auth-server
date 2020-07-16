@@ -9,6 +9,7 @@ class BaseTestCase(unittest.TestCase):
         self.app = app.test_client()
         self.app.testing = True
         app.config.from_object(Config)
+        app.config['IGNORAR_APP_SERVER_TOKEN'] = True
         db.create_all()
         db.session.commit()
 
