@@ -21,8 +21,7 @@ class UsuarioResource(Resource):
         usuario = Usuario(email=email, password=password)
         db.session.add(usuario)
         db.session.commit()
-        auth_token = usuario.generar_auth_token()
-        return {'auth_token': auth_token.decode(), 'id': usuario.id}, 201
+        return {'auth_token': usuario.generar_auth_token(), 'id': usuario.id}, 201
 
     def get(self):
         try:

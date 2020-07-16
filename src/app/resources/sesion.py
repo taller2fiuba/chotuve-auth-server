@@ -23,8 +23,7 @@ class SesionResource(Resource):
             # TODO: Esto debería ser un 401
             return {'mensaje': 'Email o constraseña invalidos'}, 400
 
-        auth_token = usuario.generar_auth_token()
-        return {'auth_token': auth_token.decode(), 'id': usuario.id}, 200
+        return {'auth_token': usuario.generar_auth_token(), 'id': usuario.id}, 200
 
     def get(self):
         auth_header = request.headers.get('Authorization')

@@ -1,7 +1,6 @@
 import datetime
-import jwt
 
-from app import app, db, bcrypt
+from app import db, bcrypt, generador_token
 
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -26,23 +25,7 @@ class Usuario(db.Model):
         return bcrypt.check_password_hash(self.password, password)
 
     def generar_auth_token(self):
-        # contenido encriptado del token jwt
-        payload = {
-            # expira dentro de 10 años
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=365*10),
-            # generado ahora
-            'iat': datetime.datetime.utcnow(),
-            # corresponde a este usuario
-            'sub': {
-                'uid': self.id,
-                'es_admin': False
-            }
-        }
-        return jwt.encode(
-            payload,
-            app.config.get('JWT_SECRET_KEY'),
-            algorithm='HS256'
-        )
+        return generador_token.generar_token_usuario(self.id, False)
 
     def serializar(self):
         return {
@@ -64,8 +47,7 @@ class Usuario(db.Model):
         si es administrador o no en una tupla (uid, es_admin).
         En caso contrario devuelve None.
         """
-        payload = jwt.decode(auth_token, app.config.get('JWT_SECRET_KEY'))
-        data = payload['sub']
+        data = generador_token.decodificar_token(auth_token)
         usuario_id = data.get('uid')
         es_admin = data.get('es_admin')
 

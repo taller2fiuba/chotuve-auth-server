@@ -8,7 +8,7 @@ class UsuarioTestCase(BaseTestCase):
     def test_generar_auth_token(self):
         usuario = self.crear_usuario('test@test.com', 'test')
         auth_token = usuario.generar_auth_token()
-        self.assertTrue(isinstance(auth_token, bytes))
+        self.assertTrue(isinstance(auth_token, str))
         data = Usuario.validar_auth_token(auth_token)
         self.assertIsNotNone(data)
         self.assertEqual(data[0].id, usuario.id)
