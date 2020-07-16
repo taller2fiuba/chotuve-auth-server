@@ -2,9 +2,10 @@ from flask_restful import Resource
 from flask import request
 import flask_sqlalchemy
 
-from app import db
+from app import app, db
 from app.models.usuario import Usuario
 
+ADMIN_EMAIL = app.config.get('ADMIN_EMAIL')
 OFFSET_POR_DEFECTO = 0
 CANTIDAD_POR_DEFECTO = 10
 
@@ -14,14 +15,14 @@ class UsuarioResource(Resource):
         email = post_data.get('email')
         password = post_data.get('password')
 
-        # TODO ver como hacer las validaciones de una forma copada, no tener que hacer todo a mano
-        if not Usuario.query.filter_by(email=email).one_or_none():
-            usuario = Usuario(email=email, password=password)
-            db.session.add(usuario)
-            db.session.commit()
-            auth_token = usuario.generar_auth_token()
-            return {'auth_token': auth_token.decode(), 'id': usuario.id}, 201
-        return {'errores': {'email': 'El mail ya se encuentra registrado'}}, 400
+        if Usuario.query.filter_by(email=email).one_or_none() or email == ADMIN_EMAIL:
+            return {'errores': {'email': 'El mail ya se encuentra registrado'}}, 400
+
+        usuario = Usuario(email=email, password=password)
+        db.session.add(usuario)
+        db.session.commit()
+        auth_token = usuario.generar_auth_token()
+        return {'auth_token': auth_token.decode(), 'id': usuario.id}, 201
 
     def get(self):
         try:
@@ -33,7 +34,7 @@ class UsuarioResource(Resource):
             else:
                 ids = [int(i) for i in ids.split(',')]
                 usuarios = Usuario.query.filter(Usuario.id.in_((ids)))
-            return list(map(lambda usuario: usuario.serializar(), usuarios)), 200
+            return [u.serializar() for u in usuarios], 200
         except flask_sqlalchemy.orm.exc.NoResultFound:
             return {}, 404
         except ValueError:

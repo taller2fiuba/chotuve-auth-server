@@ -9,7 +9,10 @@ class UsuarioTestCase(BaseTestCase):
         usuario = self.crear_usuario('test@test.com', 'test')
         auth_token = usuario.generar_auth_token()
         self.assertTrue(isinstance(auth_token, bytes))
-        self.assertTrue(Usuario.validar_auth_token(auth_token).id == usuario.id)
+        data = Usuario.validar_auth_token(auth_token)
+        self.assertIsNotNone(data)
+        self.assertEqual(data[0].id, usuario.id)
+        self.assertFalse(data[1])
 
     def test_generar_auth_token_deshabilitado(self):
         usuario = self.crear_usuario('test@test.com', 'test')

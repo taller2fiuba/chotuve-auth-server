@@ -10,7 +10,10 @@ class SesionResourceTestCase(BaseTestCase):
         response = self.iniciar_sesion_usuario()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json['id'], usuario.id)
-        self.assertEqual(Usuario.validar_auth_token(response.json['auth_token']).id, usuario.id)
+        data = Usuario.validar_auth_token(response.json['auth_token'])
+        self.assertIsNotNone(data)
+        self.assertEqual(data[0].id, usuario.id)
+        self.assertFalse(data[1])
 
     def test_inicio_de_sesion_fallido_no_registrado(self):
         response = self.iniciar_sesion_usuario()

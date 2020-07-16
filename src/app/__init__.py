@@ -21,11 +21,12 @@ CORS(app)
 configurar_logger()
 log = logging.getLogger(__name__)
 
-from .resources import ping, usuario, usuario_id, sesion, base_de_datos
+from .resources import ping, usuario, usuario_id, sesion, base_de_datos, usuario_admin
 
 api.add_resource(ping.PingResource, '/ping')
 api.add_resource(usuario.UsuarioResource, '/usuario')
 api.add_resource(usuario_id.UsuarioIdResource, '/usuario/<int:usuario_id>')
+api.add_resource(usuario_admin.UsuarioAdminResource, '/usuario/admin')
 api.add_resource(sesion.SesionResource, '/usuario/sesion')
 api.add_resource(base_de_datos.BaseDeDatosResource, '/base_de_datos')
 
@@ -39,3 +40,5 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
 
 log.info(f'Iniciando version de la app: {Config.APP_VERSION}')
+if app.config.get('CHOTUVE_AUTH_ADMIN_CLAVE') == 'admin':
+    log.warning(f'UTILIZANDO CLAVE DE ADMIN POR DEFECTO: "admin"')

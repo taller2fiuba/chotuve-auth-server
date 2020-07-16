@@ -33,7 +33,10 @@ class Usuario(db.Model):
             # generado ahora
             'iat': datetime.datetime.utcnow(),
             # corresponde a este usuario
-            'sub': self.id
+            'sub': {
+                'uid': self.id,
+                'es_admin': False
+            }
         }
         return jwt.encode(
             payload,
@@ -57,12 +60,19 @@ class Usuario(db.Model):
     def validar_auth_token(auth_token):
         """
         Valida un auth token. Si el token es válido y el usuario está
-        habilitado, devuelve al usuario correspondiente. En caso contrario
-        devuelve None.
+        habilitado, devuelve al usuario correspondiente y un booleano indicando
+        si es administrador o no en una tupla (uid, es_admin).
+        En caso contrario devuelve None.
         """
         payload = jwt.decode(auth_token, app.config.get('JWT_SECRET_KEY'))
-        usuario_id = payload['sub']
+        data = payload['sub']
+        usuario_id = data.get('uid')
+        es_admin = data.get('es_admin')
+
+        if usuario_id == 0 and es_admin:
+            return (None, True)
+
         usuario = Usuario.query.filter_by(id=usuario_id).one_or_none()
         if not usuario or not usuario.habilitado:
             return None
-        return usuario
+        return (usuario, False)

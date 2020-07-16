@@ -34,9 +34,12 @@ class SesionResource(Resource):
         _, token = auth_header.split(' ')[:2]
 
         try:
-            usuario = Usuario.validar_auth_token(token)
-            if not usuario:
+            data = Usuario.validar_auth_token(token)
+            if not data:
                 abort(401)
-            return {'usuario_id': usuario.id}, 200
+            usuario, es_admin = data
+            if es_admin:
+                return {'usuario_id': 0, 'es_admin': True}, 200
+            return {'usuario_id': usuario.id, 'es_admin': False}, 200
         except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
             abort(401)

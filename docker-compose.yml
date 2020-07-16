@@ -10,6 +10,8 @@ services:
             PORT: 26080
             CHOTUVE_APP_URL: ${CHOTUVE_APP_URL:-http://chotuve_app:28080}
             CHOTUVE_MEDIA_URL: ${CHOTUVE_MEDIA_URL:-http://chotuve_media:27080}
+            CHOTUVE_AUTH_ADMIN_USUARIO: ${CHOTUVE_AUTH_ADMIN_USUARIO:-}
+            CHOTUVE_AUTH_ADMIN_CLAVE: ${CHOTUVE_AUTH_ADMIN_CLAVE:-}
         ports:
             - ${CHOTUVE_AUTH_PORT:-26080}:26080
         links:

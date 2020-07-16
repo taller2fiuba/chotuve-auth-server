@@ -1,6 +1,7 @@
 import unittest
 
 from tests.base import BaseTestCase
+from app import app
 from app.models.usuario import Usuario
 
 class UsuarioResourceTestCase(BaseTestCase):
@@ -20,6 +21,12 @@ class UsuarioResourceTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 400)
         self.assertTrue(response.json['errores']['email'] == 'El mail ya se encuentra registrado')
 
+    def test_registracion_fallida_ya_registrado_con_admin_email(self):
+        response = self.app.post('/usuario', json={
+            'email': app.config.get('ADMIN_EMAIL'),
+            'password': '123456'})
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue(response.json['errores']['email'] == 'El mail ya se encuentra registrado')
 
     def test_get_usuarios_sin_usuarios_registrados(self):
         response = self.app.get('/usuario')
