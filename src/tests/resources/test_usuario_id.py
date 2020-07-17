@@ -27,7 +27,7 @@ class UsuariosResourceTestCase(BaseTestCase):
         usuario = self.crear_usuario('test@test.com', '123456')
         mock_admin.return_value = False
         response = self.app.put(f'/usuario/{usuario.id}', json={'habilitado': False})
-        self.assertEqual(401, response.status_code)
+        self.assertEqual(403, response.status_code)
 
 if __name__ == '__main__':
     unittest.main()
