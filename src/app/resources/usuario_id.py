@@ -34,7 +34,7 @@ class UsuarioIdResource(Resource):
             usuario.foto = post_data['foto']
         if 'habilitado' in post_data:
             if not g.es_admin:
-                return {'mensaje': 'Requiere admin'}, 401
+                return {'mensaje': 'Requiere admin'}, 403
             usuario.habilitado = bool(post_data['habilitado'])
 
         db.session.commit()
