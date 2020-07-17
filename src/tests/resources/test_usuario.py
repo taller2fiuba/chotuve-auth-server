@@ -1,6 +1,8 @@
 import unittest
+import mock
 
 from tests.base import BaseTestCase
+from app import app
 from app.models.usuario import Usuario
 
 class UsuarioResourceTestCase(BaseTestCase):
@@ -20,6 +22,12 @@ class UsuarioResourceTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 400)
         self.assertTrue(response.json['errores']['email'] == 'El mail ya se encuentra registrado')
 
+    def test_registracion_fallida_ya_registrado_con_admin_email(self):
+        response = self.app.post('/usuario', json={
+            'email': app.config.get('ADMIN_EMAIL'),
+            'password': '123456'})
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue(response.json['errores']['email'] == 'El mail ya se encuentra registrado')
 
     def test_get_usuarios_sin_usuarios_registrados(self):
         response = self.app.get('/usuario')
@@ -179,8 +187,10 @@ class UsuarioResourceTestCase(BaseTestCase):
         response = self.app.get('/usuario/'+str(id_no_existe))
         self.assertEqual(response.status_code, 404)
 
-    def test_deshabilitar_usuario(self):
+    @mock.patch('app.autenticacion.validar_admin_token')
+    def test_deshabilitar_usuario(self, mock_admin):
         usuario = self.crear_usuario('test2@test.com', '1234567')
+        mock_admin.return_value = True
         response = self.app.put('/usuario/'+str(usuario.id), json={
             'habilitado': False
         })

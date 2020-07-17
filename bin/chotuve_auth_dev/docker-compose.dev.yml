@@ -14,6 +14,9 @@ services:
             FLASK_ENV: "development"
             FLASK_RUN_PORT: 26080
             JWT_SECRET_KEY: ${JWT_SECRET_KEY:-}
+            CHOTUVE_AUTH_ADMIN_USUARIO: ${CHOTUVE_AUTH_ADMIN_USUARIO:-}
+            CHOTUVE_AUTH_ADMIN_CLAVE: ${CHOTUVE_AUTH_ADMIN_CLAVE:-}
+            IGNORAR_APP_SERVER_TOKEN: ${IGNORAR_APP_SERVER_TOKEN:-1}
 
             DATABASE_URL: "postgres://chotuve_auth:chotuve_auth@localhost:26032/chotuve_auth"
 

@@ -34,4 +34,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or 'JWT_SECRET_KEY'
     FLASK_ENV = os.environ.get('FLASK_ENV') or 'development'
+    IGNORAR_APP_SERVER_TOKEN = os.environ.get('IGNORAR_APP_SERVER_TOKEN') or False
+    ADMIN_EMAIL = os.environ.get('CHOTUVE_AUTH_ADMIN_EMAIL') or 'admin'
+    ADMIN_CLAVE = os.environ.get('CHOTUVE_AUTH_ADMIN_CLAVE') or 'admin'
     APP_VERSION = "0.0.1"

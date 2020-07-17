@@ -11,8 +11,8 @@ info:
 paths:
   /ping:
     get:
-      summary: Ping del App Server
-      description: Permite ver el estado del servidor
+      summary: Estado del servidor
+      description: Verificación de salud del servidor.
       produces:
       - application/json
       responses:
@@ -20,32 +20,55 @@ paths:
           description: El servidor esta activo
   /usuario:
     post:
-      summary: Crea un nuevo usuario
-      description: Crea un usuario con los datos recibidos
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: nuevo usuario
-        schema:
-          $ref: '#/definitions/UsuarioPost'
-        required: True
-      responses:
-        201:
-          description: El usuario se creo exitosamente
-          schema:
-            $ref: '#/definitions/Token'
-        400:
-          description: Error, el mail ya se encuentra registrado
-          schema:
-            $ref: '#/definitions/ErrorMailRegistrado'
-    get:
-      summary: Obtener un usuarios
-      operationId: obtenerUsuarios
-      description: Devuelve los usuarios paginados y que conciden con los parámetros
+      summary: Crear usuario
+      description: Crea un nuevo usuario no-administrador.
       produces:
         - application/json
       parameters:
+        - in: header
+          name: Authorization
+          type: string
+          description: Token de autenticación de administrador
+          required: false
+        - in: header
+          name: X-APP-SERVER-TOKEN
+          type: string
+          description: Token de autenticación de app server
+          required: false
+        - in: body
+          name: Información del usuario
+          schema:
+            $ref: '#/definitions/IdentificacionUsuario'
+          required: True
+      responses:
+        201:
+          description: Usuario creado.
+          schema:
+            $ref: '#/definitions/TokenUsuario'
+        400:
+          description: El e-mail ya se encuentra registrado.
+          schema:
+            $ref: '#/definitions/ErrorUsoInvalido'
+        401:
+          description: No autorizado. Falta token de autenticación de administrador o de app server.
+          schema:
+            $ref: '#/definitions/ErrorNoAutorizado'
+    get:
+      summary: Ver usuarios no-administradores registrados.
+      description: Devuelve una lista filtrada y paginada de usuarios no-administradores registrados.
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          description: Token de autenticación de administrador
+          required: false
+        - in: header
+          name: X-APP-SERVER-TOKEN
+          type: string
+          description: Token de autenticación de app server
+          required: false
         - in: query
           name: ids
           type: array
@@ -53,17 +76,17 @@ paths:
           items:
             type: integer
             format: int64
-          description: ids de los usuarios a obtener
+          description: IDs de los usuarios a obtener
         - in: query
           name: offset
-          description: numero de registros a omitir para paginación
+          description: Cantidad de registros a omitir para paginación
           type: integer
           format: int32
           minimum: 0
           default: 0
         - in: query
           name: limit
-          description: máximo número de registros a devolver
+          description: Cantidad máxima de registros a devolver
           type: integer
           format: int32
           minimum: 0
@@ -74,20 +97,35 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/UsuarioResponse'
-        404:
-          description: El video no existe
+              $ref: '#/definitions/Usuario'
+        400:
+          description: Parámetros de filtro o paginado inválidos.
+          schema:
+            $ref: '#/definitions/ErrorUsoInvalido'
+        401:
+          description: No autorizado. Falta token de autenticación de administrador o de app server.
+          schema:
+            $ref: '#/definitions/ErrorNoAutorizado'
   /usuario/{id}:
     get:
-      summary: Obtener un usuario por Id
-      operationId: obtenerUsuarioPorId
-      description: Devuelve el usuario que coincide con el id
+      summary: Ver información de un usuario
+      description: Obtiene toda la información correspondiente a un usuario.
       produces:
         - application/json
       parameters:
+        - in: header
+          name: Authorization
+          type: string
+          description: Token de autenticación de administrador
+          required: false
+        - in: header
+          name: X-APP-SERVER-TOKEN
+          type: string
+          description: Token de autenticación de app server
+          required: false
         - name: id
           in: path
-          description: Usuario id
+          description: ID del usuario
           type: integer
           format: int64
           required: true
@@ -95,16 +133,29 @@ paths:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/UsuarioResponse'
+            $ref: '#/definitions/Usuario'
+        401:
+          description: No autorizado. Falta token de autenticación de administrador o de app server.
+          schema:
+            $ref: '#/definitions/ErrorNoAutorizado'
         404:
-          description: El video no existe
+          description: No hay un usuario con el ID indicado.
     put:
       summary: Editar un usuario
-      operationId: editarUsuario
-      description: Edita el usuario dado por el id
+      description: Modifica parcial o totalmente la información de un usuario.
       consumes:
         - application/json
       parameters:
+        - in: header
+          name: Authorization
+          type: string
+          description: Token de autenticación de administrador
+          required: false
+        - in: header
+          name: X-APP-SERVER-TOKEN
+          type: string
+          description: Token de autenticación de app server
+          required: false
         - name: id
           in: path
           description: Usuario id
@@ -115,80 +166,266 @@ paths:
           name: video 
           description: Campos a editar del usuario
           schema:
-            $ref: '#/definitions/UsuarioRequestEdit'
+            $ref: '#/definitions/SolicitudEditarUsuario'
       responses:
         200:
           description: OK
+        401:
+          description: No autorizado. Falta token de autenticación de administrador o de app server.
+          schema:
+            $ref: '#/definitions/ErrorNoAutorizado'
+        403:
+          description: |
+            Privilegios insuficientes. El token provisto es válido pero no tiene suficiente 
+            privilegio para realizar la operación. Usualmente se debe a intentar deshabilitar un 
+            usuario con un token de app server en lugar de utilizar un token de administrador.
+          schema:
+            $ref: '#/definitions/ErrorNoAutorizado'
         404:
-          description: El video no existe
-          
+          description: No existe un usuario con el ID indicado.
   /usuario/sesion:
     get:
-      summary: Validar token de sesion
-      description: ....
+      summary: Validar token de usuario
+      description: Valida un token de autenticación de usuario (administrador o no-administrador).
       parameters:
-      - in: header
-        name: Authorization
-        description: Token pasado como header
-        required: False
-        type: string
+        - in: header
+          name: X-APP-SERVER-TOKEN
+          type: string
+          description: Token de autenticación de app server
+          required: true
+        - in: header
+          name: Authorization
+          description: Token de autenticación a validar
+          required: false
+          type: string
       produces:
       - application/json
       responses:
         200:
           description: Validacion exitosa
           schema:
-            $ref: '#/definitions/UsuarioId'
+            $ref: '#/definitions/SesionUsuario'
         401:
-          description: Token invalido o caducado
+          description: No autorizado. El token de usuario o el token de app server pasado es inválido.
+          schema:
+            $ref: '#/definitions/ErrorNoAutorizado'
     post:
-      summary: Inicio de sesion
-      description: Dada la informacion de un usario se devuelve el token identificador del mismo si el usuario está habilitado
+      summary: Generar token de autenticación de usuarios no-administradores.
+      description: Genera un token de autenticación de usuarios no-administradores a partir de su e-mail y clave.
       produces:
       - application/json
       parameters:
+      - in: header
+        name: X-APP-SERVER-TOKEN
+        type: string
+        description: Token de autenticación de app server
+        required: true
       - in: body
         name: usuario
         schema:
-          $ref: '#/definitions/UsuarioSession'
+          $ref: '#/definitions/IdentificacionUsuario'
       responses:
         200:
-          description: Inicio de sesion exitosa
+          description: Inicio de sesion exitoso
           schema:
-            $ref: '#/definitions/Token'
+            $ref: '#/definitions/TokenUsuario'
         400:
           description: Mail o contraseña incorrectos
           schema:
-            $ref: '#/definitions/MensajeCampoInvalido'
+            $ref: '#/definitions/ErrorDatosIncorrectos'
+        401:
+          description: No autorizado. El token de app server es inválido.
+          schema:
+            $ref: '#/definitions/ErrorNoAutorizado'
+  /usuario/admin:
+    post:
+      summary: Autorización de usuarios administradores.
+      description: Genera un token de autenticación para adminsitradores a partir de un usuario y clave.
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: usuario
+          schema:
+            $ref: '#/definitions/IdentificacionUsuario'
+      responses:
+        200:
+          description: Inicio de sesión exitoso.
+          schema:
+            $ref: '#/definitions/TokenUsuario'
+        400:
+          description: Falta el e-mail o la clave
+          schema:
+            $ref: '#/definitions/ErrorDatosIncorrectos'
+        401:
+          description: Credenciales inválidas
+          schema:
+            $ref: '#/definitions/ErrorNoAutorizado'
+  /app-server:
+    get:
+      summary: Ver app servers habilitados.
+      description: Devuelve una lista paginada de app servers activos actualmente.
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          description: Token de autenticación de administrador.
+          required: true
+        - in: query
+          name: offset
+          description: Cantidad de registros a omitir para paginación
+          type: integer
+          format: int32
+          minimum: 0
+          default: 0
+        - in: query
+          name: limit
+          description: Cantidad máxima de registros a devolver
+          type: integer
+          format: int32
+          minimum: 0
+          default: 10
+      responses:
+        200:
+          description: App servers habilitados
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AppServer'
+        400:
+          description: Parámetros de filtro o paginado inválidos.
+          schema:
+            $ref: '#/definitions/ErrorUsoInvalido'
+        401:
+          description: No autorizado. Falta token de autenticación de administrador o es inválido.
+          schema:
+            $ref: '#/definitions/ErrorNoAutorizado'
+    post:
+      summary: Habilita un nuevo app server.
+      description: Genera un token para habilitar un nuevo app server.
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          description: Token de autenticación de administrador.
+          required: true
+        - in: body
+          name: App server
+          schema:
+            $ref: '#/definitions/AppServer'
+      responses:
+        201:
+          description: Token de autorización.
+          schema:
+            $ref: '#/definitions/TokenAppServer'
+        400:
+          description: Faltan campos o ya existe un app server habilitado en esa URL.
+          schema:
+            $ref: '#/definitions/ErrorUsoInvalido'
+        401:
+          description: Falta el token de autenticación de administrador o es inválido.
+          schema:
+            $ref: '#/definitions/ErrorNoAutorizado'
+  /app-server/{id}:
+    get:
+      summary: Ver información de un app server
+      description: Devuelve toda la información del app server solicitado.
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          description: Token de autenticación de administrador.
+          required: true
+        - name: id
+          in: path
+          description: ID de app server
+          type: integer
+          format: int64
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AppServer'
+        401:
+          description: Falta el token de autenticación de administrador o es inválido.
+          schema:
+            $ref: '#/definitions/ErrorNoAutorizado'
+        404:
+          description: El app server no existe
+    delete:
+      summary: Deshabilitar un app server
+      description: Deshabilita y elimina toda la información sobre un app server.
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          description: Token de autenticación de administrador.
+          required: true
+        - name: id
+          in: path
+          description: ID de app server
+          type: integer
+          format: int64
+          required: true
+      responses:
+        200:
+          description: El app server fue eliminado
+        401:
+          description: Falta el token de autenticación de administrador o es inválido.
+          schema:
+            $ref: '#/definitions/ErrorNoAutorizado'
+        404:
+          description: El app server no existe
+  /app-server/sesion:
+    get:
+      summary: Valida un token de app server.
+      description: Valida que el token de app server corresponda a un app server activo.
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: X-APP-SERVER-TOKEN
+          type: string
+      responses:
+        200:
+          description: Token de app server válido
+        401:
+          description: Token de app server inválido
 definitions:
-  UsuarioRequestEdit:
-    properties:
-      nombre:
-        type: string
-        example: Pedro
-      apellido:
-        type: string
-        example: López
-      telefono:
-        type: string
-        example: 11-44986532
-      direccion:
-        type: string
-        example: Av Las Heras 1200
-      foto:
-        type: string
-        format: url
-        example:  https://www.firebase.com/poerw/plopez.png
-        description: URL donde está la foto
-      habilitado:
-        type: boolean
-        example: false
-  UsuarioResponse:
+  AppServer:
     properties:
       id:
         type: integer
-        format: int64
-        example: 987
+        example: 123
+      nombre:
+        type: string
+        example: ar1-appserver
+      url:
+        type: string
+        format: url
+        example: ar1-appserver.com
+  TokenAppServer:
+    properties:
+      id:
+        type: integer
+        example: 123
+      token:
+        type: string
+        example: a313e887aec5561ed52f1e6acf647162
+  Usuario:
+    properties:
+      id:
+        type: integer
+        example: 123
       nombre:
         type: string
         example: Pedro
@@ -205,71 +442,70 @@ definitions:
         type: string
         format: url
         example:  https://www.firebase.com/poerw/plopez.png
-        description: URL donde está la foto
       habilitado:
         type: boolean
         example: false
-  UsuarioId:
-    type: object
-    required:
-    - usuario_id
-    properties:
-      usuario_id:
-        type: integer
-        format: int64
-        example: 456
-  UsuarioPost:
-    type: object
-    required:
-    - email
-    - password
+  IdentificacionUsuario:
     properties:
       email:
         type: string
-        description: El mail tiene que ser único
+        format: email
+        example: admin@email.com
       password:
         type: string
-  UsuarioSession:
-    type: object
-    required: 
-      - email
-      - clave
+        example: s3cr3t0!
+  TokenUsuario:
     properties:
-      email:
-        type: string
-      clave:
-        type: string
-  Token:
-    type: object
-    required:
-    - auth_token
-    - id
-    properties:
+      id:
+        type: integer
+        example: 123
       auth_token:
         type: string
-        format: uuid
-        description: token jwt
-      id: 
-        type: integer
-        format: int64
-        example: 123
-        description: Id del usuario 
-  ErrorMailRegistrado:
-    type: object
+        example: a313e887aec5561ed52f1e6acf647162
+  SesionUsuario:
     properties:
-      errores:
-        type: object
-        properties:
-          email:
-            type: string
-            example: El mail ya se encuentra registrado
-  MensajeCampoInvalido:
-    type: object
-    required:
-    - mensaje
+      id:
+        type: integer
+        example: 123
+      es_admin:
+        type: boolean
+        example: false
+  SolicitudEditarUsuario:
+    properties:
+      nombre:
+        type: string
+        example: Pedro
+      apellido:
+        type: string
+        example: López
+      telefono:
+        type: string
+        example: 11-44986532
+      direccion:
+        type: string
+        example: Av Las Heras 1200
+      foto:
+        type: string
+        format: url
+        example:  https://www.firebase.com/poerw/plopez.png
+      habilitado:
+        type: boolean
+        example: false
+  ErrorDatosIncorrectos:
     properties:
       mensaje:
         type: string
+        example: El campo no tiene un valor correcto.
+  ErrorNoAutorizado:
+    properties:
+      mensaje:
+        type: string
+        example: El token de autenticación es inválido.
+  ErrorUsoInvalido:
+    properties:
+      mensaje:
+        type: string
+        example: Falta un campo obligatorio o algún campo tiene un valor incorrecto.
 
 # Added by API Auto Mocking Plugin
 # host: chotuve-auth-server-g4.herokuapp.com

@@ -2,9 +2,11 @@ from flask_restful import Resource
 from flask import request, abort
 import jwt
 
+from app.autenticacion import requiere_app_token
 from app.models.usuario import Usuario
 
 class SesionResource(Resource):
+    @requiere_app_token
     def post(self):
         if not 'application/json' in request.content_type:
             abort(400)
@@ -23,9 +25,9 @@ class SesionResource(Resource):
             # TODO: Esto debería ser un 401
             return {'mensaje': 'Email o constraseña invalidos'}, 400
 
-        auth_token = usuario.generar_auth_token()
-        return {'auth_token': auth_token.decode(), 'id': usuario.id}, 200
+        return {'auth_token': usuario.generar_auth_token(), 'id': usuario.id}, 200
 
+    @requiere_app_token
     def get(self):
         auth_header = request.headers.get('Authorization')
         if not auth_header or not auth_header.startswith('Bearer '):
@@ -34,9 +36,12 @@ class SesionResource(Resource):
         _, token = auth_header.split(' ')[:2]
 
         try:
-            usuario = Usuario.validar_auth_token(token)
-            if not usuario:
+            data = Usuario.validar_auth_token(token)
+            if not data:
                 abort(401)
-            return {'usuario_id': usuario.id}, 200
+            usuario, es_admin = data
+            if es_admin:
+                return {'usuario_id': 0, 'es_admin': True}, 200
+            return {'usuario_id': usuario.id, 'es_admin': False}, 200
         except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
             abort(401)
