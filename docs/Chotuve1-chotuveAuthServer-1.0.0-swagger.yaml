@@ -163,7 +163,7 @@ paths:
           format: int64
           required: true
         - in: body
-          name: video 
+          name: datos 
           description: Campos a editar del usuario
           schema:
             $ref: '#/definitions/SolicitudEditarUsuario'
@@ -179,6 +179,45 @@ paths:
             Privilegios insuficientes. El token provisto es válido pero no tiene suficiente 
             privilegio para realizar la operación. Usualmente se debe a intentar deshabilitar un 
             usuario con un token de app server en lugar de utilizar un token de administrador.
+          schema:
+            $ref: '#/definitions/ErrorNoAutorizado'
+        404:
+          description: No existe un usuario con el ID indicado.
+  /usuario/{id}/clave:
+    put:
+      summary: Actualizar clave
+      description: Cambia la clave de un usuario
+      consumes:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          description: Token de autenticación de administrador
+          required: false
+        - in: header
+          name: X-APP-SERVER-TOKEN
+          type: string
+          description: Token de autenticación de app server
+          required: false
+        - name: id
+          in: path
+          description: Usuario id
+          type: integer
+          format: int64
+          required: true
+        - in: body
+          name: clave 
+          description: Nueva clave
+          schema:
+            $ref: '#/definitions/SolicitudEditarClave'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Falta la nueva clave o no es válida.
+        401:
+          description: No autorizado. Falta token de autenticación de administrador o de app server.
           schema:
             $ref: '#/definitions/ErrorNoAutorizado'
         404:
@@ -470,6 +509,11 @@ definitions:
       es_admin:
         type: boolean
         example: false
+  SolicitudEditarClave:
+    properties:
+      password:
+        type: string
+        example: s3cr3t0!
   SolicitudEditarUsuario:
     properties:
       nombre:
