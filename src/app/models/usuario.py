@@ -18,8 +18,11 @@ class Usuario(db.Model):
 
     def __init__(self, email, password):
         self.email = email
-        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
         self.registro_fecha_hora = datetime.datetime.now()
+        self.actualizar_clave(password)
+
+    def actualizar_clave(self, password):
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def verificar_password(self, password):
         return bcrypt.check_password_hash(self.password, password)

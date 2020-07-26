@@ -209,5 +209,47 @@ class UsuarioResourceTestCase(BaseTestCase):
                                          'foto': None,
                                          'habilitado': False})
 
+    def test_actualizar_clave(self):
+        response = self.app.post('/usuario', json={
+            'email': 'test@test.com',
+            'password': '123456'})
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(response.json['auth_token'])
+        self.assertTrue(response.json['id'], 1)
+
+        response = self.app.put('/usuario/1/clave', json={
+            'password': 'nueva-clave'
+        })
+
+        self.assertEqual(response.status_code, 200)
+
+        response = self.app.post('/usuario/sesion', json={
+            'email': 'test@test.com',
+            'password': 'nueva-clave'
+        })
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_actualizar_clave_da_400_si_esta_vacia(self):
+        response = self.app.post('/usuario', json={
+            'email': 'test@test.com',
+            'password': '123456'})
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(response.json['auth_token'])
+        self.assertTrue(response.json['id'], 1)
+
+        response = self.app.put('/usuario/1/clave', json={
+            'password': ''
+        })
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_actualizar_clave_da_404_si_no_existe_id(self):
+        response = self.app.put('/usuario/1/clave', json={
+            'password': 'nueva-clave'
+        })
+
+        self.assertEqual(response.status_code, 404)
+
 if __name__ == '__main__':
     unittest.main()
