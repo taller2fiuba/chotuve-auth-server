@@ -63,3 +63,7 @@ class Usuario(db.Model):
         if not usuario or not usuario.habilitado:
             return None
         return (usuario, False)
+
+    @staticmethod
+    def cantidad_usuarios():
+        return Usuario.query.count()
