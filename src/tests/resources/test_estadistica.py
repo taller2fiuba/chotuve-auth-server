@@ -8,7 +8,7 @@ class EstadisticaResourceTestCase(BaseTestCase):
     def test_cantidad_de_usuarios(self, mock_db):
         mock_db.count.return_value = 0
 
-        response = self.app.get('/stats')
+        response = self.app.get('/stats/historico')
         estadisticas = response.json
         self.assertEqual(estadisticas["total_usuarios"], 0)
 
