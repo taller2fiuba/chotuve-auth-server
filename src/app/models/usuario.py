@@ -1,6 +1,7 @@
 import datetime
 
 from app import db, bcrypt, generador_token
+from sqlalchemy import func
 
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -12,6 +13,7 @@ class Usuario(db.Model):
     telefono = db.Column(db.String(255), nullable=True)
     foto = db.Column(db.String(255), nullable=True)
     habilitado = db.Column(db.Boolean, default=True, nullable=False)
+    fecha = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
     def __repr__(self):
         return f'<Usuario {self.email}>'
@@ -67,3 +69,20 @@ class Usuario(db.Model):
     @staticmethod
     def cantidad_usuarios():
         return Usuario.query.count()
+
+    @staticmethod
+    def usuarios_por_fecha(f_inicio, f_final):
+        query = db.session.query(db.func.date(Usuario.fecha), db.func.count('*')).filter(Usuario.fecha >= f_inicio,
+               Usuario.fecha <= f_final).group_by(db.func.date(Usuario.fecha)).all()
+        usuarios = {}
+        for fecha in query:
+            usuarios[str(fecha[0])] = fecha[1]
+
+        #saco los segundos y minutos
+        fecha = datetime.date(f_inicio.year, f_inicio.month, f_inicio.day)
+        f_final = datetime.date(f_final.year, f_final.month, f_final.day)
+        while fecha <= f_final:
+            if str(fecha) not in usuarios:
+                usuarios[str(fecha)] = 0
+            fecha = fecha + datetime.timedelta(days=1)
+        return usuarios
