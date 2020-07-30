@@ -72,6 +72,9 @@ class Usuario(db.Model):
 
     @staticmethod
     def usuarios_por_fecha(f_inicio, f_final):
+        f_final = f_final + datetime.timedelta(seconds=59, minutes=59, hours=23)
+        #este es ya que sino la query se hara para la f_final
+        #a las 00 y no entraran los usuarios de f_final
         query = db.session.query(db.func.date(Usuario.fecha), db.func.count('*')).\
                                  filter(Usuario.fecha >= f_inicio, Usuario.fecha <= f_final).\
                                  group_by(db.func.date(Usuario.fecha)).all()
