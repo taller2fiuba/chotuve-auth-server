@@ -439,6 +439,48 @@ paths:
           description: Token de app server válido
         401:
           description: Token de app server inválido
+  /stats:
+    get:
+      summary: Devuelve la cantidad de usuarios registrados en el sistema por fecha.
+      description: Devuelve la cantidad de usuarios registrados en el sistema por cada dia dentro del rango pasado por parametro.
+      produces:
+        - application/json
+      parameters:
+      - in: query
+        name: inicio
+        type: string
+        format: date
+        description: fecha inicio para tomar las estadísticas
+        required: true
+      - in: query
+        name: fin
+        type: string
+        format: date
+        description: fecha fin para tomar las estadísticas inclusive
+        required: true  
+      responses:
+        200:
+          description: Pedido exitoso
+          schema:
+            type: object
+            example: "{usuarios: {2020-10-20 : 5}}"
+        400:
+          description: Parametros inválidos.
+          schema:
+            type: object
+            example: "{}"
+  /stats/historico:
+    get:
+      summary: Devuelve la cantidad de usuarios registrados en el sistema.
+      description: Devuelve la cantidad de usuarios en el sistema.
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Pedido exitoso
+          schema:
+            type: object
+            example: "{total_usuarios : 5}"
 definitions:
   AppServer:
     properties:
